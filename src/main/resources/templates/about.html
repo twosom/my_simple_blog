@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sd="http://www.thymeleaf.org/spring-data">
+
+<div th:replace="/fragments/header.html :: fragment-header"></div>
+
+<body>
+
+<div th:replace="fragments/nav.html :: fragment-nav('About Me')"></div>
+
+  <!-- Main Content -->
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-8 col-md-10 mx-auto">
+        <h3>Java</h3>
+        <p>Java 언어로 기초적인 안드로이드 프로젝트 및 서버를 제작할 수 있습니다.</p>
+        <h3>Spring</h3>
+        <p>Java 언어로 스프링 프로젝트를 만들 수 있습니다.<br/>
+        최근에는 JPA 로 DB 연동 및 테이블의 연관관계를 정의하는 기술을 공부 중입니다. <br/><br/>
+
+        스프링이 Thymeleaf를 강력하게 밀어주고 있어 현재 Thymeleaf 사용법도 함게 공부하고 있습니다.
+        시대의 흐름에 따라 API 통신의 요구가 늘어나는 만큼 스프링으로 API를 제작하는 것에도 관심을 가지며 공부하고 있습니다.</p>
+        <h3>Kotlin</h3>
+        <p>Kotlin 언어로 간단한 안드로이드 프로젝트를 제작할 수 있습니다. <br/>
+        함수형 프로그래밍이 가능한 만큼 Spring 프로젝트를 Kotlin 언어로 제작하는 일에도 관심을 가지고 있습니다.</p>
+        <h3>Swift</h3>
+        <p>Swift 언어로 간단한 iOS 프로젝트를 제작할 수 있습니다.</p>
+      </div>
+    </div>
+  </div>
+
+  <hr>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-8 col-md-10 mx-auto">
+          <ul class="list-inline text-center">
+            <li class="list-inline-item">
+              <a href="https://github.com/twosom?tab=repositories">
+                <span class="fa-stack fa-lg">
+                  <i class="fas fa-circle fa-stack-2x"></i>
+                  <i class="fab fa-github fa-stack-1x fa-inverse"></i>
+                </span>
+              </a>
+            </li>
+          </ul>
+          <p class="copyright text-muted">e-mail : two_somang@icloud.com</p>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Bootstrap core JavaScript -->
+  <script src="vendor/jquery/jquery.min.js"></script>
+  <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+  <!-- Custom scripts for this template -->
+  <script src="js/clean-blog.min.js"></script>
+
+</body>
+
+</html>

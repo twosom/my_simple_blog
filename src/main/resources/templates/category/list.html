@@ -1,0 +1,38 @@
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorator="layouts/main">
+<head>
+    <div th:replace="/fragments/header.html :: fragment-header"></div>
+</head>
+<body>
+
+<!-- Navigation -->
+<div th:replace="/fragments/nav.html :: fragment-nav"></div>
+
+<div class="container">
+    <li class="next">
+        <a th:href="@{/categories/new}">write</a>
+    </li>
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>#</th>
+            <th>name</th>
+            <th>date</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="category, index : ${categories.content}">
+            <th scope="row" th:text="${index.count}"></th>
+<!--            th:href="@{'/categories/' + ${category.id} +'/edit'}"-->
+            <td><a th:text="${category.name}" th:href="@{'/categories/' + ${category.id} +'/edit'}" ></a></td>
+            <td th:text="${#temporals.format(category.createdDate, 'yyyy-MM-dd hh:mm:ss EEE')}"></td>
+        </tr>
+        </tbody>
+    </table>
+
+</div>
+<div th:replace="/fragments/footer.html :: fragment-footer"></div>
+
+</body>
+
+</html>

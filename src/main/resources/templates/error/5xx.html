@@ -1,0 +1,26 @@
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorator="layouts/main">
+<head>
+    <meta charset="UTF-8"/>
+    <title th:text="'Sorry, ' + ${error}">Sorry, </title>
+    <style type="text/css">
+        .wrapper {
+            width: 100%;
+            text-align: center;
+        }
+        .big {
+            font-size: 100%
+        }
+    </style>
+    <div th:replace="fragments/header.html :: fragment-header"></div>
+</head>
+<body>
+<div th:replace="fragments/nav.html :: fragment-nav(${error})"></div>
+<div class="wrapper">
+    <div class="big">
+        <h1>서버에 문제가 발생한듯 하네요!!</h1>
+        <br />
+    </div>
+</div>
+</body>
+</html>

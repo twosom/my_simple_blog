@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorator="layouts/main">
+
+<div th:replace="/fragments/header.html :: fragment-header"></div>
+
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-light fixed-top" id="mainNav">
+    <div class="container">
+        <a class="navbar-brand" th:href="@{/}">Somang's portfolio</a>
+        <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse"
+                data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false"
+                aria-label="Toggle navigation">
+            Menu
+            <i class="fas fa-bars"></i>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarResponsive">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/}">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="about.html">About</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/posts/new}">New Post</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="contact.html">Contact</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!-- Page Header -->
+<header class="masthead" th:src="@{/img/about-bg.jpg}" style="background-image: url('/img/about-bg.jpg')">
+    <div class="overlay"></div>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-md-10 mx-auto">
+                <div class="post-heading">
+                    <h1 th:text="${postDto.title}"></h1>
+                    <span class="meta">Pos ted by
+              <a href="#">Start Bootstrap</a>
+                    <strong th:text="${#temporals.format(postDto.createdDate, 'yyyy-MM-dd hh:mm:ss EEE')}"></strong>
+                    category <strong th:if="${postDto.categoryName}" th:text="${postDto.categoryName}"></strong>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-md-10 mx-auto">
+                <p th:text="${postDto.content}"></p>
+            </div>
+        </div>
+    </div>
+</article>
+
+<div class="row" style="padding-top: 100px;">
+    <div class="col-lg-8-offset-2 col-md-10 col-md-offset-1">
+        <h4 id="addComment">댓글을 남겨주세요.</h4>
+        <form th:action="@{/comments}" th:object="${commentDto}" method="post" th:id="comment">
+            <input type="hidden" th:value="${postDto.id}" id="postId" name="postId"/>
+
+            <div class="well" th:classappend="(${#fields.hasErrors('content')}? ' has-error')">
+                <input type="text" class="form-control input-lg" id="content" name="content" placeholder="댓글내용"/>
+                <div th:if="${#fields.hasErrors('content')}" class="alert alert-danger" role="alert"
+                     th:errors="*{content}"></div>
+                <ul class="pager" style="text-align:right;">
+                    <li class="next">
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                    </li>
+                </ul>
+            </div>
+        </form>
+        <form th:object="${commentDto}" th:action="@{/}" method="post" th:id="deleteComment">
+            <ul class="media-list comments" th:each="comment : ${postDto.comments}">
+                <li class="media">
+                    <div class="media-body">
+                        <h5 class="media-heading pull-left">twosom</h5>
+                        <div class="comment-info pull-left">
+                            <div class="btn-default btn-xs"
+                                 th:text="${#temporals.format(comment.createdDate, 'yyyy-MM-dd hh:mm:ss EEE')}">
+                                <i class="fa fa-clock-o"></i> Posted 3 weeks ago>
+                            </div>
+                            <button style="top: 18px;" th:onclick="deleteComment([[${comment.postId}]], [[${comment.id}]])"
+                                  class="btn btn-outline-danger">삭제
+                            </button>
+                            <p class="well" th:text="${comment.content}">Hi</p>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        </form>
+        <script type="text/javascript">
+            function deleteComment(postId, commentId) {
+                document.getElementById("deleteComment").action = "/comments/" + postId + "/" + commentId;
+                document.getElementById("deleteComment").submit();
+            }
+        </script>
+    </div>
+</div>
+
+<hr>
+
+<!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-md-10 mx-auto">
+                <ul class="list-inline text-center">
+
+                    <li class="list-inline-item">
+                        <a href="https://github.com/twosom?tab=repositories">
+                <span class="fa-stack fa-lg">
+                  <i class="fas fa-circle fa-stack-2x"></i>
+                  <i class="fab fa-github fa-stack-1x fa-inverse"></i>
+                </span>
+                        </a>
+                    </li>
+                </ul>
+                <p class="copyright text-muted">e-mail : two_somang@icloud.com</p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- Bootstrap core JavaScript -->
+<script th:src="@{/vendor/jquery/jquery.min.js}" src="vendor/jquery/jquery.min.js"></script>
+<script th:src="@{/vendor/bootstrap/js/bootstrap.bundle.min.js}"
+        src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+<!-- Custom scripts for this template -->
+<script th:src="@{/js/clean-blog.min.js}" src="js/clean-blog.min.js"></script>
+
+</body>
+
+</html>
