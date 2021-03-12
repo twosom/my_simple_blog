@@ -43,7 +43,6 @@ public class PostControllerTest {
         Post post = (Post) mvcResult.getModelAndView().getModel().get("post");
         Assertions.assertThat(post.getTitle()).isEqualTo("제목");
         Assertions.assertThat(post.getContent()).isEqualTo("컨텐츠");
-        Assertions.assertThat(post.getCode()).isEqualTo("마크다운");
         Assertions.assertThat(post.getStatus()).isEqualTo(PostStatus.Y);
     }
 

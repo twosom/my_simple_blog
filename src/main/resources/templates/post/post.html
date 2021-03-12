@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
-<div th:replace="/fragments/header.html :: fragment-header('post list')"></div>
+<div th:replace="fragments/header.html :: fragment-header('post list')"></div>
 
 <body>
 
@@ -21,13 +21,10 @@
                     <a class="nav-link" th:href="@{/}">Home</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="about.html">About</a>
+                    <a class="nav-link" th:href="@{/about}">About</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" th:href="@{/posts/new}">New Post</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="contact.html">Contact</a>
                 </li>
             </ul>
         </div>
@@ -72,6 +69,10 @@
             <div class="col-lg-8 col-md-10 mx-auto">
                 <p th:text="${postDto.content}"></p>
             </div>
+            <form th:if="${userDto}" th:action="@{/posts/{id}/delete(id=${postDto.id})}" method="post">
+                            <button th:if="${#strings.equals(postDto.username, userDto.username)}" type="submit" style="top: 18px;"
+                                    class="btn btn-outline-danger">삭제</button>
+                                </form>
         </div>
     </div>
 </article>

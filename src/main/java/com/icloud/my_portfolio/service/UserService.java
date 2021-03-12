@@ -43,7 +43,7 @@ public class UserService implements UserDetailsService {
         user.setPassword(encodedPassword);
         /* User 활성화 */
         user.setEnabled(true);
-        user.setRole(Role.USER);
+        user.setRole(Role.ADMIN);
         user.setCreatedDate(LocalDateTime.now());
         userRepository.save(user);
         sendMailMessage(user);

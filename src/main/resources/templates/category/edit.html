@@ -1,10 +1,10 @@
 <html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorator="layouts/main">
 <head>
-    <div th:replace="/fragments/header.html :: fragment-header('category')"></div>
+    <div th:replace="fragments/header.html :: fragment-header('category')"></div>
 </head>
 <body>
-<div th:replace="/fragments/nav.html :: fragment-nav('카테고리 수정')"></div>
+<div th:replace="fragments/nav.html :: fragment-nav('카테고리 수정')"></div>
 
 <div class="container">
     <form class="form-horizontal well bs-component col-lg-10 col-lg-offset-1"

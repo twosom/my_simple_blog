@@ -51,11 +51,6 @@ public class PostController {
                     enabledComments.add(comment);
                 }
             }
-
-
-
-            System.out.println("post = " + post);
-//            Post post = postService.findByIdAndStatus(id, PostStatus.Y);
             model.addAttribute("postDto", new PostDto(post, enabledComments));
             model.addAttribute("commentDto", new CommentDto());
             return "post/post";
