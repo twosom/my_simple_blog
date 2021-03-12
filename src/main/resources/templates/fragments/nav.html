@@ -17,11 +17,15 @@
                         <a class="nav-link" th:href="@{/}">Home</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" th:href="@{/about}">About</a>
-                    </li>
-                    <li class="nav-item">
                         <a class="nav-link" th:href="@{/posts/new}">New Post</a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/categories/}">Categories</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/about}">About</a>
+                    </li>
+
                 </ul>
             </div>
             <div class="d-grid gap-3 d-md-flex justify-content-md-end" sec:authorize="!isAuthenticated()">
@@ -47,7 +51,7 @@
                     <div class="site-heading">
                         <h1 th:text="${message}">Simple Blog</h1>
                         <div sec:authorize="isAuthenticated()">
-                            <h3 th:if="${#strings.equals(message, 'Home')}" th:text="${#authentication.name} + '님 좋은하루 되세요.'"></h3>
+                            <h3 th:if="${#strings.equals(message, 'Home')}" th:text="${#authentication.name} + '님 오늘도 좋은하루 되세요.'"></h3>
                         </div>
                         <span class="subheading">for Somang's Portfolio</span>
                     </div>

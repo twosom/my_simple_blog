@@ -21,10 +21,13 @@
                     <a class="nav-link" th:href="@{/}">Home</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" th:href="@{/about}">About</a>
+                    <a class="nav-link" th:href="@{/posts/new}">New Post</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" th:href="@{/posts/new}">New Post</a>
+                    <a class="nav-link" th:href="@{/categories/}">Categories</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/about}">About</a>
                 </li>
             </ul>
         </div>
@@ -65,14 +68,25 @@
 <!-- Post Content -->
 <article>
     <div class="container">
+        <div class="alert alert-danger" th:if="${errMsg}" role="alert">
+            <p th:text="${errMsg}"></p>
+        </div>
         <div class="row">
             <div class="col-lg-8 col-md-10 mx-auto">
                 <p th:text="${postDto.content}"></p>
             </div>
             <form th:if="${userDto}" th:action="@{/posts/{id}/delete(id=${postDto.id})}" method="post">
-                            <button th:if="${#strings.equals(postDto.username, userDto.username)}" type="submit" style="top: 18px;"
-                                    class="btn btn-outline-danger">삭제</button>
-                                </form>
+                <button th:if="${#strings.equals(postDto.username, userDto.username)}" type="submit" style="top: 18px;"
+                        class="btn btn-outline-danger">삭제
+                </button>
+            </form>
+
+
+            <form th:if="${userDto}" th:action="@{/posts/edit/{id}(id=${postDto.id})}" method="get">
+                <button th:if="${#strings.equals(postDto.username, userDto.username)}" type="submit" style="top: 18px;"
+                        class="btn btn-outline-info">수정
+                </button>
+            </form>
         </div>
     </div>
 </article>

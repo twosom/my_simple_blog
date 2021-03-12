@@ -14,9 +14,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import org.thymeleaf.util.StringUtils;
 
 import javax.validation.Valid;
 import java.util.ArrayList;
@@ -44,7 +42,6 @@ public class PostController {
             }
             Post post = postService.findByIdAndStatus(id, PostStatus.Y);
             List<Comment> comments = post.getComments();
-
             List<Comment> enabledComments = new ArrayList<>();
             for (Comment comment : comments) {
                 if (comment.getStatus() == CommentStatus.Y) {
@@ -62,20 +59,6 @@ public class PostController {
         }
     }
 
-    @GetMapping("/edit/{id}")
-    public String editPost(@PathVariable Long id, Model model) {
-        try {
-            Post post = postService.findByIdAndStatus(id, PostStatus.Y);
-            PostDto createPost = new PostDto(post);
-            //==Entity를 직접 노출하지 않기 위해서 Dto 사용==//
-            model.addAttribute("editPost", createPost);
-            return "post/edit";
-        } catch (PostNotFoundException e) {
-            /* id에 해당하는 게시글 찾지 못했을 시 에러메시지 추가해주기 */
-            model.addAttribute("errMsg", id + "번 게시글을 찾지 못했습니다.");
-            return "/index";
-        }
-    }
 
     @GetMapping("/new")
     public String newPost(Model model, Authentication authentication) {
@@ -110,12 +93,49 @@ public class PostController {
         return "redirect:/posts/" + newPost.getId();
     }
 
+
+    @GetMapping("/edit/{id}")
+    public String editPost(@PathVariable Long id, Model model, Authentication authentication) {
+        try {
+
+            Post post = postService.findByIdAndStatus(id, PostStatus.Y);
+            String name = authentication.getName();
+            if (!post.getUser().getUsername().equals(name)) {
+
+                List<Comment> comments = post.getComments();
+                List<Comment> enabledComments = new ArrayList<>();
+
+                for (Comment comment : comments) {
+                    if (comment.getStatus() == CommentStatus.Y) {
+                        enabledComments.add(comment);
+                    }
+                }
+                model.addAttribute("postDto", new PostDto(post, enabledComments));
+                model.addAttribute("commentDto", new CommentDto());
+                model.addAttribute("errMsg", "잘못된 접근입니다.");
+                return "post/post";
+            }
+
+            PostDto postDto = new PostDto(post);
+            //==Entity를 직접 노출하지 않기 위해서 Dto 사용==//
+            model.addAttribute("postDto", postDto);
+            model.addAttribute("categories", categoryService.findAll());
+            return "post/edit";
+        } catch (PostNotFoundException e) {
+            /* id에 해당하는 게시글 찾지 못했을 시 에러메시지 추가해주기 */
+            model.addAttribute("errorMsg", id + "번 게시글을 찾지 못했습니다.");
+            return "/index";
+        }
+    }
+
     @PostMapping("/{id}/edit")
-    public String modifyPost(@PathVariable Long id, @ModelAttribute("editPost") @Valid PostDto createPost, BindingResult bindingResult) {
+    public String modifyPost(@PathVariable Long id, @ModelAttribute("postDto") @Valid PostDto createPost, BindingResult bindingResult, Model model) {
         if (bindingResult.hasErrors()) {
+            model.addAttribute("categories", categoryService.findAll());
             return "post/edit";
         }
         Post post = createPost.toEntity();
+        System.out.println("createPost = " + createPost.getCategoryId());
         post.setCategory(new Category(createPost.getCategoryId()));
         postService.updatePost(id, post);
         //==수정 완료 후 게시글로 리다이렉트==//

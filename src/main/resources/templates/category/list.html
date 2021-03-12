@@ -18,6 +18,7 @@
             <th>#</th>
             <th>name</th>
             <th>date</th>
+            <th></th>
         </tr>
         </thead>
         <tbody>
@@ -26,13 +27,24 @@
 <!--            th:href="@{'/categories/' + ${category.id} +'/edit'}"-->
             <td><a th:text="${category.name}" th:href="@{'/categories/' + ${category.id} +'/edit'}" ></a></td>
             <td th:text="${#temporals.format(category.createdDate, 'yyyy-MM-dd hh:mm:ss EEE')}"></td>
+            <th><a class="btn btn-danger" role="button" th:onclick="deleteCategory([[${category.id}]])">삭제</a></th>
         </tr>
         </tbody>
     </table>
+    <a class="btn btn-primary" role="button" th:href="@{/categories/new}">카테고리 추가</a>
 
 </div>
 <div th:replace="fragments/footer.html :: fragment-footer"></div>
 
 </body>
+<script type="text/javascript">
+    function deleteCategory(categoryId) {
+        let form = document.createElement("form");
+        form.action = "/categories/" + categoryId + "/delete";
+        form.method = "post";
+        document.body.appendChild(form);
+        form.submit();
+    }
+</script>
 
 </html>

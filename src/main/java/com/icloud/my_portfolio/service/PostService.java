@@ -31,7 +31,9 @@ public class PostService {
     public Post updatePost(Long id, Post post) {
         try {
             Post oldPost = postRepositoryWithJpql.findByIdAndStatus(id, PostStatus.Y);
+
             oldPost.setContent(post.getContent());
+            oldPost.setCategory(post.getCategory());
             oldPost.setTitle(post.getTitle());
             return oldPost;
         } catch (PostNotFoundException e) {

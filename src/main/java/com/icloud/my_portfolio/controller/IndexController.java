@@ -22,7 +22,7 @@ public class IndexController {
     public String home(Model model, Pageable pageable) {
 
         Page<Post> all = postRepository.findAll(pageable);
-//        Page<Post> all = postRepository.findAll(pageable);
+
         model.addAttribute("posts", all);
         return "index";
     }
