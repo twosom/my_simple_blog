@@ -1,8 +1,10 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" xmlns:sd="http://www.thymeleaf.org/spring-data">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sd="http://www.thymeleaf.org/spring-data"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
 <head>
-    <div th:replace="/fragments/header.html :: fragment-header"></div>
+    <div th:replace="/fragments/header.html :: fragment-header('Somang\'s Portfolio for Spring Boot + JPA')"></div>
 
 </head>
 
@@ -54,6 +56,11 @@
 <!--</header>-->
 
 <!-- Main Content -->
+<div th:if=${result} class="alert alert-success" role="alert">
+    <h4 class="alert-heading">알림</h4>
+    <p th:text="${result}"></p>
+    <hr>
+</div>
 <div class="container">
     <div class="row">
         <div class="col-lg-8 col-md-10 col-md-offset-1">

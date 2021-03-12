@@ -16,6 +16,8 @@ public class CommentDto {
     @NotEmpty(message = "내용을 입력해주세요.")
     private String content;
     private Long postId;
+    private Long userId;
+    private String username;
     private LocalDateTime createdDate;
 
     public CommentDto(Comment comment) {
@@ -23,6 +25,7 @@ public class CommentDto {
         this.content = comment.getContent();
         this.postId = comment.getPost().getId();
         this.createdDate = comment.getCreatedDate();
+        this.username = comment.getUser().getUsername();
     }
 
     public Comment toEntity() {

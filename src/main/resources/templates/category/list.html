@@ -1,12 +1,12 @@
 <html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorator="layouts/main">
 <head>
-    <div th:replace="/fragments/header.html :: fragment-header"></div>
+    <div th:replace="/fragments/header.html :: fragment-header('category')"></div>
 </head>
 <body>
 
 <!-- Navigation -->
-<div th:replace="/fragments/nav.html :: fragment-nav"></div>
+<div th:replace="/fragments/nav.html :: fragment-nav('카테고리 리스트')"></div>
 
 <div class="container">
     <li class="next">

@@ -1,6 +1,7 @@
 package com.icloud.my_portfolio.repository;
 
 
+import com.icloud.my_portfolio.domain.CommentStatus;
 import com.icloud.my_portfolio.domain.Post;
 import com.icloud.my_portfolio.domain.PostStatus;
 import com.icloud.my_portfolio.exception.PostNotFoundException;
@@ -47,5 +48,21 @@ public class PostRepositoryWithJpql {
                         "where c.id = :id", Post.class)
                 .setParameter("id", id)
                 .getResultList();
+    }
+
+    public Post findByIdAndStatus(Long id, PostStatus postStatus, CommentStatus commentStatus) {
+        List<Post> resultList = em.createQuery(
+                "select p " +
+                        "from Post p left join p.comments c " +
+                        "where p.status = :postStatus " +
+                        "or c.status = :commentStatus", Post.class)
+                .setParameter("postStatus", postStatus)
+                .setParameter("commentStatus", commentStatus)
+                .getResultList();
+
+        if (resultList.isEmpty()) {
+            throw new PostNotFoundException(id + "번 게시글을  찾지 못했습니다.");
+        }
+        return resultList.get(0);
     }
 }

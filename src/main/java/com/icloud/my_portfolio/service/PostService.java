@@ -1,6 +1,7 @@
 package com.icloud.my_portfolio.service;
 
 
+import com.icloud.my_portfolio.domain.CommentStatus;
 import com.icloud.my_portfolio.domain.Post;
 import com.icloud.my_portfolio.domain.PostStatus;
 import com.icloud.my_portfolio.exception.PostNotFoundException;
@@ -31,7 +32,6 @@ public class PostService {
         try {
             Post oldPost = postRepositoryWithJpql.findByIdAndStatus(id, PostStatus.Y);
             oldPost.setContent(post.getContent());
-            oldPost.setCode(post.getCode());
             oldPost.setTitle(post.getTitle());
             return oldPost;
         } catch (PostNotFoundException e) {
@@ -49,6 +49,7 @@ public class PostService {
         }
     }
 
+    //==게시글 id와 상태로 조회==//
     public Post findByIdAndStatus(Long id, PostStatus status) {
         try {
             Post post = postRepositoryWithJpql.findByIdAndStatus(id, status);
@@ -58,4 +59,14 @@ public class PostService {
         }
     }
 
+
+    //==게시글 id와 게시글 상태, 그리고 댓글 상태로 조회==//
+    public Post findByIdAndStatus(Long id, PostStatus postStatus, CommentStatus commentStatus) {
+        try {
+            Post post = postRepositoryWithJpql.findByIdAndStatus(id, postStatus, commentStatus);
+            return post;
+        } catch (PostNotFoundException e) {
+            throw e;
+        }
+    }
 }

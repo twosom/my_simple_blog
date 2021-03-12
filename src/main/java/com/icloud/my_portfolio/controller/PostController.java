@@ -3,20 +3,24 @@ package com.icloud.my_portfolio.controller;
 
 import com.icloud.my_portfolio.controller.dto.CommentDto;
 import com.icloud.my_portfolio.controller.dto.PostDto;
-import com.icloud.my_portfolio.domain.Category;
-import com.icloud.my_portfolio.domain.Post;
-import com.icloud.my_portfolio.domain.PostStatus;
+import com.icloud.my_portfolio.controller.dto.UserDto;
+import com.icloud.my_portfolio.domain.*;
 import com.icloud.my_portfolio.exception.PostNotFoundException;
+import com.icloud.my_portfolio.repository.UserRepository;
 import com.icloud.my_portfolio.service.CategoryService;
 import com.icloud.my_portfolio.service.PostService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.thymeleaf.util.StringUtils;
 
 import javax.validation.Valid;
+import java.util.ArrayList;
+import java.util.List;
 
 @Controller
 @RequiredArgsConstructor
@@ -25,14 +29,34 @@ public class PostController {
 
     private final PostService postService;
     private final CategoryService categoryService;
+    private final UserRepository userRepository;
 
 
     @GetMapping("/{id}")
-    public String findByPost(@PathVariable(name = "id") Long id, Model model) {
+    public String findByPost(@PathVariable(name = "id") Long id, Model model, Authentication authentication) {
         try {
-            //N상태는 삭제된 상태,
+            if (authentication != null) {
+                String name = authentication.getName();
+                User user = userRepository.findByName(name).get(0);
+                UserDto userDto = new UserDto(user);
+                System.out.println("userDto = " + userDto);
+                model.addAttribute("userDto", userDto);
+            }
             Post post = postService.findByIdAndStatus(id, PostStatus.Y);
-            model.addAttribute("postDto", new PostDto(post));
+            List<Comment> comments = post.getComments();
+
+            List<Comment> enabledComments = new ArrayList<>();
+            for (Comment comment : comments) {
+                if (comment.getStatus() == CommentStatus.Y) {
+                    enabledComments.add(comment);
+                }
+            }
+
+
+
+            System.out.println("post = " + post);
+//            Post post = postService.findByIdAndStatus(id, PostStatus.Y);
+            model.addAttribute("postDto", new PostDto(post, enabledComments));
             model.addAttribute("commentDto", new CommentDto());
             return "post/post";
 
@@ -59,8 +83,14 @@ public class PostController {
     }
 
     @GetMapping("/new")
-    public String newPost(Model model) {
-        model.addAttribute("postDto", new PostDto());
+    public String newPost(Model model, Authentication authentication) {
+        String name = authentication.getName();
+        User findUser = userRepository.findByName(name).get(0);
+        PostDto postDto = new PostDto();
+        //==현재 로그인되어있는 유저의 ID값 가져와서 DTO에 할당.
+
+        postDto.setUserId(findUser.getId());
+        model.addAttribute("postDto", postDto);
         model.addAttribute("categories", categoryService.findAll());
         return "post/new";
     }
@@ -68,13 +98,14 @@ public class PostController {
     //..../posts로 으로 오는 경우
     @PostMapping
     public String createPost(@ModelAttribute(name = "postDto") @Valid PostDto createPost, BindingResult bindingResult, Model model) {
-        System.out.println("createPost = " + createPost);
         if (bindingResult.hasErrors()) {
             model.addAttribute("categories", categoryService.findAll());
             return "post/new";
         }
         //==영속성 컨텍스트에 저장하기 위한 엔티티로 변환==//
         Post post = createPost.toEntity();
+        User user = new User(createPost.getUserId());
+        post.setUser(user);
 
         post.setCategory(new Category(createPost.getCategoryId()));
 
@@ -99,6 +130,6 @@ public class PostController {
     @PostMapping("/{id}/delete")
     public String deletePost(@PathVariable Long id) {
         postService.deletePost(id);
-        return "redirect:/#/";
+        return "redirect:/";
     }
 }

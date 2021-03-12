@@ -27,8 +27,8 @@ public class Post extends SuperClass{
     @Lob
     private String content;
 
-    @Lob
-    private String code;
+//    @Lob
+//    private String code;
 
     @NotNull
     private String title;
@@ -43,9 +43,16 @@ public class Post extends SuperClass{
     @OneToMany(mappedBy = "post")
     private List<Comment> comments = new ArrayList<>();
 
-//    @ManyToOne
-//    @JoinColumn(name = "user_id")
-//    private User user;
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
+
+
+    //==연관관계 메소드==//
+    public void setUser(User user) {
+        this.user = user;
+        user.getPosts().add(this);
+    }
 
 
     public Post(Long id) {
@@ -55,7 +62,6 @@ public class Post extends SuperClass{
     @Builder
     public Post(String title, String content, String code, PostStatus status) {
         this.content = content;
-        this.code = code;
         this.title = title;
         this.status = status;
     }

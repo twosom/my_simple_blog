@@ -25,9 +25,12 @@ public class Comment extends SuperClass {
     @JoinColumn(name = "post_id")
     private Post post;
 
-//    @ManyToOne
-//    @JoinColumn(name = "user_id")
-//    private User user;
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
+
+    @Enumerated(EnumType.STRING)
+    private CommentStatus status;
 
     @Builder
     public Comment(String content, Post post) {
