@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
-<div th:replace="fragments/header.html :: fragment-header('post list')"></div>
+<div th:replace="fragments/header.html :: fragment-header(${postDto.title})"></div>
 
 <body>
 
@@ -72,9 +72,9 @@
             <p th:text="${errMsg}"></p>
         </div>
         <div class="row">
-            <div class="col-lg-8 col-md-10 mx-auto">
-                <p th:text="${postDto.content}"></p>
-            </div>
+            <textarea class="form-control" rows="10" th:text="${postDto.content}" readonly>
+<!--                <p th:text="${postDto.content}"></p>-->
+            </textarea>
             <form th:if="${userDto}" th:action="@{/posts/{id}/delete(id=${postDto.id})}" method="post">
                 <button th:if="${#strings.equals(postDto.username, userDto.username)}" type="submit" style="top: 18px;"
                         class="btn btn-outline-danger">삭제
@@ -122,7 +122,7 @@
                         <div class="comment-info pull-left">
                             <div class="btn-default btn-xs"
                                  th:text="${#temporals.format(comment.createdDate, 'yyyy-MM-dd hh:mm:ss EEE')}">
-                                <i class="fa fa-clock-o"></i> Posted 3 weeks ago>
+                                <i class="fa fa-clock-o"></i>
                             </div>
                             <span th:if="${userDto}">
                             <button th:if="${#strings.equals(comment.username, userDto.username)}" style="top: 18px;"

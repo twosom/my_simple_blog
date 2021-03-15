@@ -4,7 +4,7 @@
 
 <body class="text-center">
 
-<div th:replace="fragments/nav.html :: fragment-nav(Login)"></div>
+<div th:replace="fragments/nav.html :: fragment-nav(Register)"></div>
 <!-- Bootstrap CSS -->
 
 <form class="form-signin" th:action="@{/account/register}" th:object="${userDto}" method="post">

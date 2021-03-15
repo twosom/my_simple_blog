@@ -52,6 +52,7 @@ public class User extends SuperClass{
         this.id = userId;
     }
 
+
     //==객체지향 관점의 연관관계 메소드==//
     public void addComment(Comment comment) {
         comment.setUser(this);

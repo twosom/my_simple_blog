@@ -29,7 +29,6 @@ public class PostController {
     private final CategoryService categoryService;
     private final UserRepository userRepository;
 
-
     @GetMapping("/{id}")
     public String findByPost(@PathVariable(name = "id") Long id, Model model, Authentication authentication) {
         try {
@@ -37,6 +36,7 @@ public class PostController {
                 String name = authentication.getName();
                 User user = userRepository.findByName(name).get(0);
                 UserDto userDto = new UserDto(user);
+
                 System.out.println("userDto = " + userDto);
                 model.addAttribute("userDto", userDto);
             }

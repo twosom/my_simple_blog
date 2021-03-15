@@ -45,8 +45,8 @@
         <div class="form-group" th:classappend="(${#fields.hasErrors('content')}? ' has-error')">
             <label for="content" class="col-lg-2 control-label">Content</label>
             <div class="col-lg-10">
-                <input type="text" class="form-control" id="content" name="title" th:field="*{content}"
-                       placeholder="Content"/>
+                <textarea  class="form-control" id="content" name="title" th:field="*{content}"
+                           placeholder="Content" rows="5"></textarea>
                 <div th:if="${#fields.hasErrors('content')}" class="alert alert-danger" role="alert"
                      th:errors="*{content}"></div>
             </div>
