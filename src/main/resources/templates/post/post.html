@@ -118,6 +118,10 @@
             <ul class="media-list comments" th:each="comment : ${postDto.comments}">
                 <li class="media">
                     <div class="media-body">
+                        <span style="font-size: 1em; color: tomato"
+                              th:if="${#dates.day(#dates.createNow()) == #temporals.day(comment.createdDate)}">
+                        <i class="fas fa-circle"></i><span>New</span>
+                    </span>
                         <h5 class="media-heading pull-left" th:text="${comment.username}">twosom</h5>
                         <div class="comment-info pull-left">
                             <div class="btn-default btn-xs"
@@ -147,34 +151,8 @@
 <hr>
 
 <!-- Footer -->
-<footer>
-    <div class="container">
-        <div class="row">
-            <div class="col-lg-8 col-md-10 mx-auto">
-                <ul class="list-inline text-center">
+<div th:replace="fragments/footer_without_pager.html :: fragment-footer-without-pager"></div>
 
-                    <li class="list-inline-item">
-                        <a href="https://github.com/twosom?tab=repositories">
-                <span class="fa-stack fa-lg">
-                  <i class="fas fa-circle fa-stack-2x"></i>
-                  <i class="fab fa-github fa-stack-1x fa-inverse"></i>
-                </span>
-                        </a>
-                    </li>
-                </ul>
-                <p class="copyright text-muted">e-mail : two_somang@icloud.com</p>
-            </div>
-        </div>
-    </div>
-</footer>
-
-<!-- Bootstrap core JavaScript -->
-<script th:src="@{/vendor/jquery/jquery.min.js}" src="vendor/jquery/jquery.min.js"></script>
-<script th:src="@{/vendor/bootstrap/js/bootstrap.bundle.min.js}"
-        src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-
-<!-- Custom scripts for this template -->
-<script th:src="@{/js/clean-blog.min.js}" src="js/clean-blog.min.js"></script>
 
 </body>
 

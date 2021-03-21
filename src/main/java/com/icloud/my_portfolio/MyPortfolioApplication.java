@@ -1,13 +1,16 @@
 package com.icloud.my_portfolio;
 
+
+import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.mail.MailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.stereotype.Component;
 import org.thymeleaf.dialect.springdata.SpringDataDialect;
+
+import javax.persistence.EntityManager;
 
 
 @SpringBootApplication
@@ -27,6 +30,11 @@ public class MyPortfolioApplication {
         mailSender.setUsername("if0rever");
         mailSender.setPassword("M1SDDCU7NPJM");
         return mailSender;
+    }
+
+    @Bean
+    public JPAQueryFactory jpaQueryFactory(EntityManager em) {
+        return new JPAQueryFactory(em);
     }
 
     public static void main(String[] args) {

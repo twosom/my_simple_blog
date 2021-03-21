@@ -13,8 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Getter
-@Setter
+@Getter @Setter
 @NoArgsConstructor
 public class Post extends SuperClass{
 
@@ -26,9 +25,6 @@ public class Post extends SuperClass{
     @NotNull
     @Lob
     private String content;
-
-//    @Lob
-//    private String code;
 
     @NotNull
     private String title;

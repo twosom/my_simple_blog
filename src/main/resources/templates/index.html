@@ -3,10 +3,10 @@
       xmlns:sd="http://www.thymeleaf.org/spring-data"
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
-<head>
-    <div th:replace="fragments/header.html :: fragment-header('Somang\'s Portfolio for Spring Boot + JPA')"></div>
 
-</head>
+<div th:replace="fragments/header.html :: fragment-header('Somang\'s Portfolio for Spring Boot + JPA')"></div>
+
+
 
 <body>
 
@@ -22,14 +22,19 @@
     <div class="row">
         <div class="col-lg-8 col-md-10 col-md-offset-1">
             <div class="post-preview" th:each="post : ${posts.content}">
-                <a th:if="${post.status == T(com.icloud.my_portfolio.domain.PostStatus).Y}" th:href="@{/posts/{id}(id=${post.id})}">
+                <a th:href="@{/posts/{id}(id=${post.postId})}">
                     <h2 class="post-title" th:text="${post.title}"></h2>
+                    <span style="font-size: 1em; color: tomato"
+                          th:if="${#dates.day(#dates.createNow()) == #temporals.day(post.createdDate)}">
+                        <i class="fas fa-circle"></i><span>New</span>
+                    </span>
+
                     <h3 class="post-subtitle" th:text="${post.content}"></h3>
                 </a>
-                <p class="post-meta" th:if="${post.status == T(com.icloud.my_portfolio.domain.PostStatus).Y}">Posted by
-                    <a href="#" th:text="${post.user.username}"></a>
+                <p class="post-meta">Posted by
+                    <a href="#" th:text="${post.username}"></a>
                     <strong th:text="${#temporals.format(post.createdDate, 'yyyy-MM-dd hh:mm:ss EEE')}"></strong>
-                    category <strong th:if="${post.category}" th:text="${post.category.name}"></strong>
+                    category <strong th:if="${post.categoryName != null}" th:text="${post.categoryName}"></strong>
                 </p>
             </div>
         </div>
@@ -40,14 +45,6 @@
 
 <!-- Footer -->
 <div th:replace="fragments/footer.html :: fragment-footer"></div>
-<!-- Bootstrap core JavaScript -->
-<script th:src="@{/vendor/jquery/jquery.min.js}" src="vendor/jquery/jquery.min.js"></script>
-<script th:src="@{/vendor/bootstrap/js/bootstrap.bundle.min.js}"
-        src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-
-<!-- Custom scripts for this template -->
-<script src="js/clean-blog.min.js"></script>
-
 </body>
 
 </html>

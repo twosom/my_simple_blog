@@ -5,7 +5,7 @@
 
 <body class="text-center">
 
-<div th:replace="fragments/nav.html :: fragment-nav(Login)"></div>
+<div th:replace="fragments/nav.html :: fragment-nav('Login')"></div>
 <!-- Bootstrap CSS -->
 
 
@@ -16,7 +16,7 @@
     <link href="css/signin.css" th:href="@{/css/signin.css}" rel="stylesheet">
 
     <a th:href="@{/}"><img class="mb -1" src="https://borlabs.io/wp-content/uploads/2019/09/blog-wp-login.png" alt=""
-                           width="400" height="auto"></a>
+                           width="300" height="auto"></a>
     <h1 class="h3 mb-3 fw-normal">로그인</h1>
 
     <label for="username" class="visually-hidden">email</label>

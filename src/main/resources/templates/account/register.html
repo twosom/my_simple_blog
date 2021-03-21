@@ -14,12 +14,13 @@
     <link href="css/signin.css" th:href="@{/css/signin.css}" rel="stylesheet">
 
 
-    <a th:href="@{/}"><img class="mb-4" src="https://getbootstrap.com/docs/5.0/assets/brand/bootstrap-logo.svg" alt=""
-                           width="72" height="57"></a>
+    <a th:href="@{/}"><img class="mb-4" th:src="@{/img/user-register.png}" src="https://getbootstrap.com/docs/5.0/assets/brand/bootstrap-logo.svg" alt=""
+                           width="72" height="auto"></a>
     <h1 class="h3 mb-3 fw-normal">회원가입</h1>
 
     <label for="email" class="visually-hidden">Email</label>
-    <input type="email" id="email" name="email" th:field="*{email}" class="form-control" placeholder="이메일" required autofocus>
+    <input type="email" id="email" name="email" th:field="*{email}" class="form-control" placeholder="이메일" required
+           autofocus>
     <!--이메일 중복 예외처리를 위한 thymeleaf문-->
     <div th:if="${emailErrorMsg}" class="alert alert-danger" role="alert" th:text="${emailErrorMsg}">
     </div>
@@ -31,7 +32,8 @@
     </div>
 
     <label for="inputPassword" class="visually-hidden">Password</label>
-    <input type="password" id="inputPassword" name="password" th:field="*{password}" class="form-control" placeholder="비밀번호" required>
+    <input type="password" id="inputPassword" name="password" th:field="*{password}" class="form-control"
+           placeholder="비밀번호" required>
 
     <div th:if="${param.error}" class="alert alert-danger" role="alert">
         아이디 또는 비밀번호를 확인해주세요.

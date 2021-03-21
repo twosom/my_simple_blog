@@ -25,7 +25,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.GET, "/posts/{id}").permitAll()
                 .antMatchers("/posts/**").hasRole("ADMIN")
                 .antMatchers("/categories/**").hasRole("ADMIN")
-                .antMatchers("/", "/about", "/js/**", "/account/register", "/vendor/**", "/login/**", "/css/**", "/img/**", "/webjars/**").permitAll()
+                .antMatchers("/", "/about", "/js/**", "/account/register", "/vendor/**", "/login/**", "/css/**", "/img/**", "/webjars/**", "/api/**").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .formLogin()
