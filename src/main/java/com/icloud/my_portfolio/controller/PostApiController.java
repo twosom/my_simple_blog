@@ -3,7 +3,7 @@ package com.icloud.my_portfolio.controller;
 
 import com.icloud.my_portfolio.controller.dto.PostListDto;
 import com.icloud.my_portfolio.domain.PostStatus;
-import com.icloud.my_portfolio.repository.PostQueryRepository;
+import com.icloud.my_portfolio.repository.postquery.PostQueryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

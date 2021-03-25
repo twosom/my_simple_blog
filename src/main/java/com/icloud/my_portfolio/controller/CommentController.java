@@ -27,6 +27,7 @@ import javax.validation.Valid;
 public class CommentController {
 
     private final CommentService commentService;
+    private final UserRepository userRepository;
     private final PostService postService;
 
     @PostMapping
@@ -37,8 +38,8 @@ public class CommentController {
             return "post/post";
         }
 
-        System.out.println("commentDto.getUserId() = " + commentDto.getUserId());
-        User user = new User(commentDto.getUserId());
+//        User user = new User(commentDto.getUserId());
+        User user = userRepository.findByName(commentDto.getUsername()).get(0);
         Comment comment = commentDto.toEntity();
         user.addComment(comment);
         model.addAttribute("comment", commentService.createComment(comment));

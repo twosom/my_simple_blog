@@ -7,6 +7,8 @@ import com.icloud.my_portfolio.controller.dto.UserDto;
 import com.icloud.my_portfolio.domain.*;
 import com.icloud.my_portfolio.exception.PostNotFoundException;
 import com.icloud.my_portfolio.repository.UserRepository;
+import com.icloud.my_portfolio.repository.postquery.PostQueryRepository;
+import com.icloud.my_portfolio.repository.postquery.dto.PostViewDto;
 import com.icloud.my_portfolio.service.CategoryService;
 import com.icloud.my_portfolio.service.PostService;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +17,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.validation.Valid;
 import java.util.ArrayList;
@@ -29,33 +32,21 @@ public class PostController {
     private final CategoryService categoryService;
     private final UserRepository userRepository;
 
-    @GetMapping("/{id}")
-    public String findByPost(@PathVariable(name = "id") Long id, Model model, Authentication authentication) {
-        try {
-            if (authentication != null) {
-                String name = authentication.getName();
-                User user = userRepository.findByName(name).get(0);
-                UserDto userDto = new UserDto(user);
+    private final PostQueryRepository postQueryRepository;
 
-                System.out.println("userDto = " + userDto);
-                model.addAttribute("userDto", userDto);
-            }
-            Post post = postService.findByIdAndStatus(id, PostStatus.Y);
-            List<Comment> comments = post.getComments();
-            List<Comment> enabledComments = new ArrayList<>();
-            for (Comment comment : comments) {
-                if (comment.getStatus() == CommentStatus.Y) {
-                    enabledComments.add(comment);
-                }
-            }
-            model.addAttribute("postDto", new PostDto(post, enabledComments));
+
+    @GetMapping("/{id}")
+    public String findByPost(@PathVariable(name = "id") Long id, Model model, RedirectAttributes redirectAttributes) {
+        try {
+            PostViewDto postDto = postQueryRepository.findViewPost(id);
+            model.addAttribute("postDto", postDto);
             model.addAttribute("commentDto", new CommentDto());
             return "post/post";
 
         } catch (PostNotFoundException e) {
             /* id에 해당하는 게시글 찾지 못했을 시 에러메시지 추가해주기 */
-            model.addAttribute("errMsg", id + "번 게시글을 찾지 못했습니다.");
-            return "/index";
+            redirectAttributes.addFlashAttribute("result", id + "번에 해당하는 게시글을 찾지 못했습니다.");
+            return "redirect:/";
         }
     }
 

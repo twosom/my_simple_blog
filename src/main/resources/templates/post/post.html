@@ -75,15 +75,17 @@
             <textarea class="form-control" rows="10" th:text="${postDto.content}" readonly>
 <!--                <p th:text="${postDto.content}"></p>-->
             </textarea>
-            <form th:if="${userDto}" th:action="@{/posts/{id}/delete(id=${postDto.id})}" method="post">
-                <button th:if="${#strings.equals(postDto.username, userDto.username)}" type="submit" style="top: 18px;"
+            <form th:if="${#strings.equals(#authentication.name, postDto.username)}" th:action="@{/posts/{id}/delete(id=${postDto.id})}" method="post">
+                <button type="submit"
+                        style="top: 18px;"
                         class="btn btn-outline-danger">삭제
                 </button>
             </form>
 
 
-            <form th:if="${userDto}" th:action="@{/posts/edit/{id}(id=${postDto.id})}" method="get">
-                <button th:if="${#strings.equals(postDto.username, userDto.username)}" type="submit" style="top: 18px;"
+            <form th:if="${#strings.equals(#authentication.name, postDto.username)}" th:action="@{/posts/edit/{id}(id=${postDto.id})}" method="get">
+                <button type="submit"
+                        style="top: 18px;"
                         class="btn btn-outline-info">수정
                 </button>
             </form>
@@ -97,7 +99,8 @@
     <div class="col-lg-8-offset-2 col-md-10 col-md-offset-1">
         <h4 id="addComment">댓글을 남겨주세요.</h4>
         <form th:action="@{/comments}" th:object="${commentDto}" method="post" th:id="comment">
-            <input type="hidden" th:if="${userDto}" name="userId" id="userId" th:value="${userDto.id}"/>
+            <input type="hidden" th:if="${#authentication.name}" name="username" id="username"
+                   th:value="${#authentication.name}"/>
             <input type="hidden" th:value="${postDto.id}" id="postId" name="postId"/>
 
             <div class="well" th:classappend="(${#fields.hasErrors('content')}? ' has-error')">
@@ -112,39 +115,32 @@
             </div>
         </form>
 
-
-        <form th:object="${commentDto}" th:if="${postDto.comments}" th:action="@{/}" method="post"
-              th:id="deleteComment">
-            <ul class="media-list comments" th:each="comment : ${postDto.comments}">
-                <li class="media">
-                    <div class="media-body">
+        <ul class="media-list comments" th:each="comment : ${postDto.comments}">
+            <li class="media">
+                <div class="media-body">
                         <span style="font-size: 1em; color: tomato"
                               th:if="${#dates.day(#dates.createNow()) == #temporals.day(comment.createdDate)}">
                         <i class="fas fa-circle"></i><span>New</span>
                     </span>
-                        <h5 class="media-heading pull-left" th:text="${comment.username}">twosom</h5>
-                        <div class="comment-info pull-left">
-                            <div class="btn-default btn-xs"
-                                 th:text="${#temporals.format(comment.createdDate, 'yyyy-MM-dd hh:mm:ss EEE')}">
-                                <i class="fa fa-clock-o"></i>
-                            </div>
-                            <span th:if="${userDto}">
-                            <button th:if="${#strings.equals(comment.username, userDto.username)}" style="top: 18px;"
-                                    th:onclick="deleteComment([[${comment.postId}]], [[${comment.id}]])"
-                                    class="btn btn-outline-danger">삭제</button>
-                                </span>
-                            <p class="well" th:text="${comment.content}">Hi</p>
+                    <h5 class="media-heading pull-left" th:text="${comment.username}">twosom</h5>
+                    <div class="comment-info pull-left">
+                        <div class="btn-default btn-xs"
+                             th:text="${#temporals.format(comment.createdDate, 'yyyy-MM-dd hh:mm:ss EEE')}">
+                            <i class="fa fa-clock-o"></i>
                         </div>
+                        <form id="deleteComment" th:if="${#strings.equals(comment.username, #authentication.name)}"
+                              method="post" th:action="@{/comments/{postId}/{commentId} (postId=${comment.postId}, commentId=${comment.id} )}">
+                            <button style="top: 18px;"
+                                    type="submit"
+                                    class="btn btn-outline-danger">삭제
+                            </button>
+                        </form>
+
+                        <p class="well" th:text="${comment.content}">Hi</p>
                     </div>
-                </li>
-            </ul>
-        </form>
-        <script type="text/javascript">
-            function deleteComment(postId, commentId) {
-                document.getElementById("deleteComment").action = "/comments/" + postId + "/" + commentId;
-                document.getElementById("deleteComment").submit();
-            }
-        </script>
+                </div>
+            </li>
+        </ul>
     </div>
 </div>
 
