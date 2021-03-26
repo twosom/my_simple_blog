@@ -12,4 +12,12 @@ public class CommentViewDto {
     private String username;
     private Long postId;
     private String content;
+
+    public CommentViewDto(Long id, LocalDateTime createdDate, String username, Long postId, String content) {
+        this.id = id;
+        this.createdDate = createdDate;
+        this.username = username;
+        this.postId = postId;
+        this.content = content;
+    }
 }

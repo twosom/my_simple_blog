@@ -38,7 +38,11 @@ public class PostController {
     @GetMapping("/{id}")
     public String findByPost(@PathVariable(name = "id") Long id, Model model, RedirectAttributes redirectAttributes) {
         try {
-            PostViewDto postDto = postQueryRepository.findViewPost(id);
+
+            PostViewDto postDto = postService.findOne(id);
+
+
+//            PostViewDto postDto = postQueryRepository.findViewPost(id);
             model.addAttribute("postDto", postDto);
             model.addAttribute("commentDto", new CommentDto());
             return "post/post";

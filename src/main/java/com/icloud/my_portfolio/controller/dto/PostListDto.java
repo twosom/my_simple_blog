@@ -1,5 +1,6 @@
 package com.icloud.my_portfolio.controller.dto;
 
+import com.icloud.my_portfolio.domain.Post;
 import com.querydsl.core.annotations.QueryProjection;
 import lombok.Data;
 
@@ -23,5 +24,14 @@ public class PostListDto {
         this.username = username;
         this.createdDate = createdDate;
         this.categoryName = categoryName;
+    }
+
+    public PostListDto(Post post) {
+        this.postId = post.getId();
+        this.title = post.getTitle();
+        this.content = post.getContent();
+        this.username = post.getUser().getUsername();
+        this.createdDate = post.getCreatedDate();
+        this.categoryName = post.getCategory().getName();
     }
 }
