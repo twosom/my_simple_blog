@@ -56,26 +56,6 @@ public class PostDto {
                 }).collect(Collectors.toList());
     }
 
-    //==삭제된 댓글과 함께 조회되는 것을 막기 위한 DTO생성자==//
-    public PostDto(Post post, List<Comment> enabledComments) {
-        this.id = post.getId();
-        this.title = post.getTitle();
-        this.content = post.getContent();
-        this.createdDate = post.getCreatedDate();
-        this.username = post.getUser().getUsername();
-        if (post.getCategory() == null) {
-            this.categoryName = "";
-        } else {
-            this.categoryName = post.getCategory().getName();
-        }
-
-        this.comments = enabledComments
-                .stream().map(comment -> {
-                    CommentDto commentDto = new CommentDto(comment);
-                    return commentDto;
-                }).collect(Collectors.toList());
-    }
-
     public Post toEntity() {
         return Post.builder()
                 .title(getTitle())

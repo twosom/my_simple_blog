@@ -5,11 +5,10 @@ import com.icloud.my_portfolio.domain.Role;
 import com.icloud.my_portfolio.domain.User;
 import com.icloud.my_portfolio.exception.UserEmailDuplicateException;
 import com.icloud.my_portfolio.exception.UserNameDuplicateException;
-import com.icloud.my_portfolio.repository.UserRepository;
+import com.icloud.my_portfolio.repository.UserJpaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.MailSender;
 import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -28,7 +27,7 @@ import java.util.List;
 @Transactional
 public class UserService implements UserDetailsService {
 
-    private final UserRepository userRepository;
+    private final UserJpaRepository userJpaRepository;
     private final PasswordEncoder passwordEncoder;
     private final MailSender mailSender;
 
@@ -45,7 +44,7 @@ public class UserService implements UserDetailsService {
         user.setEnabled(true);
         user.setRole(Role.ADMIN);
         user.setCreatedDate(LocalDateTime.now());
-        userRepository.save(user);
+        userJpaRepository.save(user);
         sendMailMessage(user);
         return user;
     }
@@ -56,12 +55,12 @@ public class UserService implements UserDetailsService {
 
     /* 유저의 중복 검사를 위한 로직 */
     private void userValidateByEmailAndUsername(User user) {
-        List<User> findByEmail = userRepository.findByEmail(user.getEmail());
+        List<User> findByEmail = userJpaRepository.findByEmail(user.getEmail());
         if (findByEmail.size() > 0) {
             throw new UserEmailDuplicateException(user.getEmail() + "은 이미 있는 이메일입니다.");
         }
 
-        List<User> findByName = userRepository.findByName(user.getUsername());
+        List<User> findByName = userJpaRepository.findByName(user.getUsername());
         if (findByName.size() > 0) {
             throw new UserNameDuplicateException(user.getUsername() + "은(는) 이미 있는 사용자 이름입니다.");
         }
@@ -79,7 +78,7 @@ public class UserService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        User user = userRepository.findByEmail(email)
+        User user = userJpaRepository.findByEmail(email)
                 .get(0);
         UserDetails userDetails = new UserDetails() {
             @Override

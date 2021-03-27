@@ -41,6 +41,11 @@ public class User extends SuperClass{
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Comment> comments = new ArrayList<>();
 
+    @OneToOne(mappedBy = "user", fetch = FetchType.LAZY)
+    private PostLike postLike;
+
+
+
     @Builder
     public User(String email, String username, String password) {
         this.email = email;
@@ -57,5 +62,9 @@ public class User extends SuperClass{
     public void addComment(Comment comment) {
         comment.setUser(this);
         getComments().add(comment);
+    }
+
+    public void addPostLike(PostLike postLike) {
+        this.postLike = postLike;
     }
 }

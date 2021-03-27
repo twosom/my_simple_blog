@@ -7,9 +7,9 @@ import com.icloud.my_portfolio.domain.Comment;
 import com.icloud.my_portfolio.domain.Post;
 import com.icloud.my_portfolio.domain.PostStatus;
 import com.icloud.my_portfolio.domain.User;
-import com.icloud.my_portfolio.repository.UserRepository;
+import com.icloud.my_portfolio.repository.UserJpaRepository;
 import com.icloud.my_portfolio.service.CommentService;
-import com.icloud.my_portfolio.service.PostService;
+import com.icloud.my_portfolio.service.post.PostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -27,7 +27,7 @@ import javax.validation.Valid;
 public class CommentController {
 
     private final CommentService commentService;
-    private final UserRepository userRepository;
+    private final UserJpaRepository userJpaRepository;
     private final PostService postService;
 
     @PostMapping
@@ -39,7 +39,7 @@ public class CommentController {
         }
 
 //        User user = new User(commentDto.getUserId());
-        User user = userRepository.findByName(commentDto.getUsername()).get(0);
+        User user = userJpaRepository.findByName(commentDto.getUsername()).get(0);
         Comment comment = commentDto.toEntity();
         user.addComment(comment);
         model.addAttribute("comment", commentService.createComment(comment));

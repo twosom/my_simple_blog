@@ -2,21 +2,23 @@ package com.icloud.my_portfolio.repository.postquery;
 
 import com.icloud.my_portfolio.controller.dto.PostListDto;
 import com.icloud.my_portfolio.controller.dto.QPostListDto;
-import com.icloud.my_portfolio.domain.CommentStatus;
-import com.icloud.my_portfolio.domain.PostStatus;
-import com.icloud.my_portfolio.domain.QComment;
+import com.icloud.my_portfolio.domain.*;
 import com.icloud.my_portfolio.exception.PostNotFoundException;
 import com.icloud.my_portfolio.repository.postquery.dto.CommentViewDto;
 import com.icloud.my_portfolio.repository.postquery.dto.PostViewDto;
 import com.querydsl.core.types.Projections;
+import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import static com.icloud.my_portfolio.domain.QCategory.*;
 import static com.icloud.my_portfolio.domain.QComment.*;
@@ -98,4 +100,47 @@ public class PostQueryRepository {
     }
 
 
+    public Page<Post> findAll(Pageable pageable) {
+        List<Post> contents = getAllPosts(pageable);
+
+
+        List<Long> postIds = getPostIds(contents);
+
+        List<Comment> comments = queryFactory
+                .select(comment)
+                .from(comment)
+                .innerJoin(comment.user, user).fetchJoin()
+                .innerJoin(comment.post, post).fetchJoin()
+                .where(comment.post.id.in(postIds))
+                .fetch();
+
+        Map<Long, List<Comment>> collect = comments.stream()
+                .collect(Collectors.groupingBy(comment -> comment.getPost().getId()));
+
+
+        contents.forEach(post -> post.setComments(collect.get(post.getId())));
+
+        JPAQuery<Post> countQuery = queryFactory
+                .select(post)
+                .from(post);
+
+        return PageableExecutionUtils.getPage(contents, pageable, countQuery::fetchCount);
+    }
+
+    private List<Long> getPostIds(List<Post> contents) {
+        List<Long> postIds = contents.stream().map(Post::getId)
+                .collect(Collectors.toList());
+        return postIds;
+    }
+
+    private List<Post> getAllPosts(Pageable pageable) {
+        return queryFactory
+                .select(post)
+                .from(post)
+                .leftJoin(post.category, category).fetchJoin()
+                .innerJoin(post.user, user).fetchJoin()
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+    }
 }

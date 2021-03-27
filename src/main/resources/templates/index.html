@@ -35,6 +35,8 @@
                     <a href="#" th:text="${post.username}"></a>
                     <strong th:text="${#temporals.format(post.createdDate, 'yyyy-MM-dd hh:mm:ss EEE')}"></strong>
                     category <strong th:if="${post.categoryName != null}" th:text="${post.categoryName}"></strong>
+                    <i class="bi bi-heart-fill"></i>
+                    <strong th:text="${post.likeCount}"></strong>
                 </p>
             </div>
         </div>

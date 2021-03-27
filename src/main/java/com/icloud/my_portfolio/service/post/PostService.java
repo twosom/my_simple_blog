@@ -1,4 +1,4 @@
-package com.icloud.my_portfolio.service;
+package com.icloud.my_portfolio.service.post;
 
 
 import com.icloud.my_portfolio.controller.dto.PostListDto;
@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Service
-@Transactional
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class PostService {
 
@@ -31,41 +31,17 @@ public class PostService {
     private final PostRepository postRepository;
     private final PostRepositoryWithJpql postRepositoryWithJpql;
 
-    private final PostCustomRepository postCustomRepository;
 
-
-
-    public Page<PostListDto> findPosts(Pageable pageable) {
-        Page<Post> allPosts = postCustomRepository.findAllPosts(pageable);
-
-        List<PostListDto> content = allPosts.getContent()
-                .stream().map(post -> new PostListDto(post))
-                .collect(Collectors.toList());
-
-
-        long total = allPosts.getTotalElements();
-
-        return new PageImpl(content, pageable, total);
-    }
-
-
-    //== 게시글 조회 ==//
-    public PostViewDto findOne(Long id) {
-        Post findPost = postCustomRepository.findOne(id);
-
-        return new PostViewDto(findPost);
-    }
-
-
+    @Transactional
     public Post createPost(Post post) {
         post.setCreatedDate(LocalDateTime.now());
-        return postRepositoryWithJpql.save(post);
+        return postRepository.save(post);
     }
 
+    @Transactional
     public Post updatePost(Long id, Post post) {
         try {
             Post oldPost = postRepositoryWithJpql.findByIdAndStatus(id, PostStatus.Y);
-
             oldPost.setContent(post.getContent());
             oldPost.setCategory(post.getCategory());
             oldPost.setTitle(post.getTitle());
@@ -76,6 +52,7 @@ public class PostService {
     }
 
     //==데이터베이스에서 바로 삭제하지 않고 상태만 변경==//
+    @Transactional
     public void deletePost(Long id) {
         try {
             Post oldPost = postRepositoryWithJpql.findByIdAndStatus(id, PostStatus.Y);
@@ -94,17 +71,5 @@ public class PostService {
             throw e;
         }
     }
-
-
-    //==게시글 id와 게시글 상태, 그리고 댓글 상태로 조회==//
-    public Post findByIdAndStatus(Long id, PostStatus postStatus, CommentStatus commentStatus) {
-        try {
-            Post post = postRepositoryWithJpql.findByIdAndStatus(id, postStatus, commentStatus);
-            return post;
-        } catch (PostNotFoundException e) {
-            throw e;
-        }
-    }
-
 
 }

@@ -5,10 +5,12 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Data @NoArgsConstructor
+@Data
+@NoArgsConstructor
 public class PostViewDto {
 
     private Long id;
@@ -19,6 +21,9 @@ public class PostViewDto {
     private String content;
 
     private List<CommentViewDto> comments;
+    private List<PostLikeViewDto> postLikes;
+
+    private List<String> likeUsers;
 
     public PostViewDto(Post post) {
         this.id = post.getId();
@@ -33,8 +38,23 @@ public class PostViewDto {
                         new CommentViewDto(
                                 comment.getId(),
                                 comment.getCreatedDate(),
-                                this.username, this.id,
+                                comment.getUser().getUsername(), this.id,
                                 comment.getContent()))
                 .collect(Collectors.toList());
+
+
+        this.postLikes = post.getPostLikes()
+                .stream().map(postLike ->
+                        new PostLikeViewDto(
+                                postLike.getId(),
+                                post.getId(),
+                                postLike.getUser().getUsername()))
+                .collect(Collectors.toList());
+
+        this.likeUsers = post.getPostLikes()
+                .stream().map(postLike -> postLike.getUser().getUsername())
+                .collect(Collectors.toList());
+
+
     }
 }

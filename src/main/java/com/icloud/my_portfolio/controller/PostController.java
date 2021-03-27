@@ -3,14 +3,15 @@ package com.icloud.my_portfolio.controller;
 
 import com.icloud.my_portfolio.controller.dto.CommentDto;
 import com.icloud.my_portfolio.controller.dto.PostDto;
-import com.icloud.my_portfolio.controller.dto.UserDto;
+import com.icloud.my_portfolio.controller.dto.PostEditDto;
 import com.icloud.my_portfolio.domain.*;
 import com.icloud.my_portfolio.exception.PostNotFoundException;
-import com.icloud.my_portfolio.repository.UserRepository;
+import com.icloud.my_portfolio.repository.UserJpaRepository;
 import com.icloud.my_portfolio.repository.postquery.PostQueryRepository;
 import com.icloud.my_portfolio.repository.postquery.dto.PostViewDto;
 import com.icloud.my_portfolio.service.CategoryService;
-import com.icloud.my_portfolio.service.PostService;
+import com.icloud.my_portfolio.service.post.PostQueryService;
+import com.icloud.my_portfolio.service.post.PostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
@@ -29,21 +30,17 @@ import java.util.List;
 public class PostController {
 
     private final PostService postService;
-    private final CategoryService categoryService;
-    private final UserRepository userRepository;
+    private final PostQueryService postQueryService;
 
-    private final PostQueryRepository postQueryRepository;
+    private final CategoryService categoryService;
+    private final UserJpaRepository userJpaRepository;
 
 
     @GetMapping("/{id}")
     public String findByPost(@PathVariable(name = "id") Long id, Model model, RedirectAttributes redirectAttributes) {
         try {
-
-            PostViewDto postDto = postService.findOne(id);
-
-
-//            PostViewDto postDto = postQueryRepository.findViewPost(id);
-            model.addAttribute("postDto", postDto);
+            PostViewDto postViewDto = postQueryService.findOne(id);
+            model.addAttribute("postViewDto", postViewDto);
             model.addAttribute("commentDto", new CommentDto());
             return "post/post";
 
@@ -58,11 +55,12 @@ public class PostController {
     @GetMapping("/new")
     public String newPost(Model model, Authentication authentication) {
         String name = authentication.getName();
-        User findUser = userRepository.findByName(name).get(0);
+
+        Long findUserId = userJpaRepository.findIdByName(name);
         PostDto postDto = new PostDto();
         //==현재 로그인되어있는 유저의 ID값 가져와서 DTO에 할당.
 
-        postDto.setUserId(findUser.getId());
+        postDto.setUserId(findUserId);
         model.addAttribute("postDto", postDto);
         model.addAttribute("categories", categoryService.findAll());
         return "post/new";
@@ -70,7 +68,9 @@ public class PostController {
 
     //..../posts로 으로 오는 경우
     @PostMapping
-    public String createPost(@ModelAttribute(name = "postDto") @Valid PostDto createPost, BindingResult bindingResult, Model model) {
+    public String createPost(@ModelAttribute(name = "postDto") @Valid PostDto createPost,
+                             BindingResult bindingResult,
+                             Model model) {
         if (bindingResult.hasErrors()) {
             model.addAttribute("categories", categoryService.findAll());
             return "post/new";
@@ -78,11 +78,10 @@ public class PostController {
         //==영속성 컨텍스트에 저장하기 위한 엔티티로 변환==//
         Post post = createPost.toEntity();
         User user = new User(createPost.getUserId());
-        post.setUser(user);
-
-        post.setCategory(new Category(createPost.getCategoryId()));
+        post.addUserAndCategory(user, new Category(createPost.getCategoryId()));
 
         Post newPost = postService.createPost(post);
+        /* 점검 */
         model.addAttribute("post", newPost);
         //==저장을 완료하면 게시글로 리다이렉트==//
         return "redirect:/posts/" + newPost.getId();
@@ -92,45 +91,32 @@ public class PostController {
     @GetMapping("/edit/{id}")
     public String editPost(@PathVariable Long id, Model model, Authentication authentication) {
         try {
+            /* id 와 name 으로 post를 찾고 없으면 edit로 redirect */
 
-            Post post = postService.findByIdAndStatus(id, PostStatus.Y);
-            String name = authentication.getName();
-            if (!post.getUser().getUsername().equals(name)) {
-
-                List<Comment> comments = post.getComments();
-                List<Comment> enabledComments = new ArrayList<>();
-
-                for (Comment comment : comments) {
-                    if (comment.getStatus() == CommentStatus.Y) {
-                        enabledComments.add(comment);
-                    }
-                }
-                model.addAttribute("postDto", new PostDto(post, enabledComments));
-                model.addAttribute("commentDto", new CommentDto());
-                model.addAttribute("errMsg", "잘못된 접근입니다.");
-                return "post/post";
-            }
-
-            PostDto postDto = new PostDto(post);
-            //==Entity를 직접 노출하지 않기 위해서 Dto 사용==//
-            model.addAttribute("postDto", postDto);
-            model.addAttribute("categories", categoryService.findAll());
+            String username = authentication.getName();
+            Post post = postQueryService.findByIdAndUsername(id, username);
+            List<Category> categories = categoryService.findAll();
+            PostEditDto editPostDto = new PostEditDto(post, categories);
+            model.addAttribute("editPostDto", editPostDto);
             return "post/edit";
         } catch (PostNotFoundException e) {
             /* id에 해당하는 게시글 찾지 못했을 시 에러메시지 추가해주기 */
-            model.addAttribute("errorMsg", id + "번 게시글을 찾지 못했습니다.");
+            model.addAttribute("errorMsg", "잘못된 접근입니다.");
             return "/index";
         }
     }
 
     @PostMapping("/{id}/edit")
-    public String modifyPost(@PathVariable Long id, @ModelAttribute("postDto") @Valid PostDto createPost, BindingResult bindingResult, Model model) {
+    public String modifyPost(@PathVariable Long id,
+                             @ModelAttribute("postDto") @Valid PostDto createPost,
+                             BindingResult bindingResult,
+                             Model model) {
+
         if (bindingResult.hasErrors()) {
             model.addAttribute("categories", categoryService.findAll());
             return "post/edit";
         }
         Post post = createPost.toEntity();
-        System.out.println("createPost = " + createPost.getCategoryId());
         post.setCategory(new Category(createPost.getCategoryId()));
         postService.updatePost(id, post);
         //==수정 완료 후 게시글로 리다이렉트==//

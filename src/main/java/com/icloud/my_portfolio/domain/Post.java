@@ -2,10 +2,7 @@ package com.icloud.my_portfolio.domain;
 
 
 import com.sun.istack.NotNull;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -15,6 +12,7 @@ import java.util.List;
 @Entity
 @Getter @Setter
 @NoArgsConstructor
+@ToString(of = {"id", "content", "title", "status"})
 public class Post extends SuperClass{
 
     @Id
@@ -43,11 +41,23 @@ public class Post extends SuperClass{
     @JoinColumn(name = "user_id")
     private User user;
 
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
+    private List<PostLike> postLikes = new ArrayList<>();
 
-    //==연관관계 메소드==//
-    public void setUser(User user) {
+//    //==연관관계 메소드==//
+//    public void setUser(User user) {
+//        this.user = user;
+//        user.getPosts().add(this);
+//    }
+
+    public void addUserAndCategory(User user, Category category) {
         this.user = user;
-        user.getPosts().add(this);
+        this.category = category;
+    }
+
+    public void addLike(PostLike postLike) {
+        postLike.addPost(this);
+        this.postLikes.add(postLike);
     }
 
 
