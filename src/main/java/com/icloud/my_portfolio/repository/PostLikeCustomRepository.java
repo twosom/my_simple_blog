@@ -26,16 +26,20 @@ public class PostLikeCustomRepository {
         return queryFactory
                 .select(postLike)
                 .from(postLike)
+                .innerJoin(postLike.post, post).fetchJoin()
                 .where(postLike.post.id.eq(postId).and(postLike.userId.eq(userId).and(postLike.status.eq(PostLikeStatus.Y))))
                 .fetchOne();
     }
 
 
-    public List<PostLike> findUnActive(Long postId, Long userId) {
+    public List<PostLike> findInacative(Long postId, Long userId) {
         return queryFactory
                 .select(postLike)
                 .from(postLike)
-                .where(postLike.post.id.eq(postId).and(postLike.userId.eq(userId)))
+                .join(postLike.post, post).fetchJoin()
+                .where(postLike.post.id.eq(postId)
+                        .and(postLike.userId.eq(userId)
+                                .and(postLike.status.eq(PostLikeStatus.N))))
                 .fetch();
     }
 

@@ -47,7 +47,6 @@ public class Post extends SuperClass {
 
     private int postLikeCount;
 
-
     public void addPostLikeCount() {
         this.postLikeCount += 1;
     }

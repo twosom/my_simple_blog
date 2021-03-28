@@ -3,6 +3,8 @@ package com.icloud.my_portfolio.repository.postquery.dto;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 public class CommentViewDto {
@@ -12,6 +14,7 @@ public class CommentViewDto {
     private String username;
     private Long postId;
     private String content;
+    private List<String> likeUsers = new ArrayList<>();
 
     public CommentViewDto(Long id, LocalDateTime createdDate, String username, Long postId, String content) {
         this.id = id;

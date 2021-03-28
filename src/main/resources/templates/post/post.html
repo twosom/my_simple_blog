@@ -73,14 +73,16 @@
         </div>
         <div class="row">
             <textarea class="form-control" rows="10" th:text="${postViewDto.content}" readonly></textarea>
-            <form th:if="${#strings.equals(#authentication.name, postViewDto.username)}" th:action="@{/posts/{id}/delete(id=${postViewDto.id})}" method="post">
+            <form th:if="${#strings.equals(#authentication.name, postViewDto.username)}"
+                  th:action="@{/posts/{id}/delete(id=${postViewDto.id})}" method="post">
                 <button type="submit"
                         style="top: 18px;"
                         class="btn btn-outline-danger">삭제
                 </button>
             </form>
 
-            <form th:if="${#strings.equals(#authentication.name, postViewDto.username)}" th:action="@{/posts/edit/{id}(id=${postViewDto.id})}" method="get">
+            <form th:if="${#strings.equals(#authentication.name, postViewDto.username)}"
+                  th:action="@{/posts/edit/{id}(id=${postViewDto.id})}" method="get">
                 <button type="submit"
                         style="top: 18px;"
                         class="btn btn-outline-info">수정
@@ -90,15 +92,17 @@
             <div class="container">
 
                 <!-- 로그인 한 경우 -->
-                <form th:if="${!postViewDto.likeUsers.contains(#authentication.name)}" sec:authorize="isAuthenticated()" method="post"
-                      th:action="@{/like/{postId}/active (postId=${postViewDto.id})}" id="activeLike">
-                    <span onclick="activeLike()">
+                <form th:if="${!postViewDto.likeUsers.contains(#authentication.name)}" sec:authorize="isAuthenticated()"
+                      method="post"
+                      th:action="@{/postlike/{postId}/active (postId=${postViewDto.id})}" id="activePostLike">
+                    <span onclick="activePostLike()">
                         <i class="bi bi-heart"><strong th:text="${postViewDto.likeUsers.size()}"></strong></i>
                     </span>
                 </form>
-                <form th:if="${postViewDto.likeUsers.contains(#authentication.name)}" sec:authorize="isAuthenticated()" method="post"
-                      th:action="@{/like/{postId}/inactive(postId=${postViewDto.id})}" id="inactiveLike">
-                    <span onclick="inactiveLike()">
+                <form th:if="${postViewDto.likeUsers.contains(#authentication.name)}" sec:authorize="isAuthenticated()"
+                      method="post"
+                      th:action="@{/postlike/{postId}/inactive(postId=${postViewDto.id})}" id="inactivePostLike">
+                    <span onclick="inactivePostLike()">
                         <i class="bi bi-heart-fill"><strong th:text="${postViewDto.likeUsers.size()}"></strong></i>
                     </span>
                 </form>
@@ -110,15 +114,6 @@
         </div>
     </div>
 </article>
-<script>
-    function activeLike() {
-        document.getElementById('activeLike').submit();
-    }
-
-    function inactiveLike() {
-        document.getElementById('inactiveLike').submit();
-    }
-</script>
 
 
 <!-- Comment -->
@@ -153,10 +148,39 @@
                     <div class="comment-info pull-left">
                         <div class="btn-default btn-xs"
                              th:text="${#temporals.format(comment.createdDate, 'yyyy-MM-dd hh:mm:ss EEE')}">
-                            <i class="fa fa-clock-o"></i>
                         </div>
+                        <!-- 로그인 한 경우 -->
+                        <form th:if="${!comment.likeUsers.contains(#authentication.name)}"
+                              sec:authorize="isAuthenticated()" method="post"
+                              th:action="@{/commentlike/{commentId}/active/{postId} (commentId=${comment.id}, postId=${postViewDto.id}) }"
+                              id="activeCommentLike">
+                                <span onclick="activeCommentLike()">
+                                    <i class="bi bi-heart">
+                                        <strong th:text="${comment.likeUsers.size()}"></strong>
+                                    </i>
+                                </span>
+                        </form>
+
+                        <form th:if="${comment.likeUsers.contains(#authentication.name)}"
+                              sec:authorize="isAuthenticated()" method="post"
+                              th:action="@{/commentlike/{commentId}/inactive/{postId} (commentId=${comment.id}, postId=${postViewDto.id}) }"
+                              id="inactiveCommentLike">
+                                <span onclick="inactiveCommentLike()">
+                                    <i class="bi bi-heart-fill">
+                                        <strong th:text="${comment.likeUsers.size()}"></strong>
+                                    </i>
+                                </span>
+                        </form>
+
+                        <!-- 로그인 안 한 경우 -->
+                        <span sec:authorize="!isAuthenticated()">
+                                <i class="bi bi-heart">
+                                    <strong th:text="${comment.likeUsers.size()}"></strong>
+                                </i>
+                            </span>
                         <form id="deleteComment" th:if="${#strings.equals(comment.username, #authentication.name)}"
-                              method="post" th:action="@{/comments/{postId}/{commentId} (postId=${comment.postId}, commentId=${comment.id} )}">
+                              method="post"
+                              th:action="@{/comments/{postId}/{commentId} (postId=${comment.postId}, commentId=${comment.id} )}">
                             <button style="top: 18px;"
                                     type="submit"
                                     class="btn btn-outline-danger">삭제
@@ -175,6 +199,23 @@
 
 <!-- Footer -->
 <div th:replace="fragments/footer_without_pager.html :: fragment-footer-without-pager"></div>
+<script>
+    function activePostLike() {
+        document.getElementById('activePostLike').submit();
+    }
+
+    function inactivePostLike() {
+        document.getElementById('inactivePostLike').submit();
+    }
+
+    function activeCommentLike() {
+        document.getElementById('activeCommentLike').submit();
+    }
+
+    function inactiveCommentLike() {
+        document.getElementById('inactiveCommentLike').submit();
+    }
+</script>
 
 
 </body>

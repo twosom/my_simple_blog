@@ -15,17 +15,14 @@ import java.util.List;
 public class PostLikeService {
 
     private final PostLikeRepository postLikeRepository;
-    private final UserRepository userRepository;
-
     private final UserCustomRepository userCustomRepository;
-
     private final PostLikeCustomRepository postLikeCustomRepository;
 
     public void activeLike(Long postId, String username) {
 
         Long userId = userCustomRepository.findIdByUsername(username);
 
-        List<PostLike> findPostLike = postLikeCustomRepository.findUnActive(postId, userId);
+        List<PostLike> findPostLike = postLikeCustomRepository.findInacative(postId, userId);
         if (!findPostLike.isEmpty()) {
             PostLike postLike = findPostLike.get(0);
             postLike.active();

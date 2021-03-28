@@ -31,9 +31,27 @@ public class Comment extends SuperClass {
     @JoinColumn(name = "user_id")
     private User user;
 
-
     @Enumerated(EnumType.STRING)
     private CommentStatus status;
+
+
+    @OneToMany(mappedBy = "comment")
+    private List<CommentLike> commentLikes = new ArrayList<>();
+
+
+    public int commentLikeCount;
+
+    public Comment(Long commentId) {
+        this.id = commentId;
+    }
+
+    public void addCommentLikeCount() {
+        this.commentLikeCount += 1;
+    }
+
+    public void removeCommentLikeCount() {
+        this.commentLikeCount -= 1;
+    }
 
     @Builder
     public Comment(String content, Post post) {

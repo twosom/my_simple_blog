@@ -18,6 +18,7 @@ import java.util.stream.Collectors;
 
 import static com.icloud.my_portfolio.domain.QCategory.*;
 import static com.icloud.my_portfolio.domain.QComment.*;
+import static com.icloud.my_portfolio.domain.QCommentLike.*;
 import static com.icloud.my_portfolio.domain.QPost.*;
 import static com.icloud.my_portfolio.domain.QPostLike.*;
 import static com.icloud.my_portfolio.domain.QUser.*;
@@ -63,6 +64,25 @@ public class PostCustomRepository {
             Post post = findPost(id);
             List<Comment> comments = findComment(post.getId());
             List<PostLike> postLikes = findPostLike(post.getId());
+
+            List<Long> commentIds = comments.stream()
+                    .map(Comment::getId)
+                    .collect(Collectors.toList());
+
+            List<CommentLike> commentLikes = queryFactory
+                    .select(commentLike)
+                    .from(commentLike)
+                    .innerJoin(commentLike.comment, comment).fetchJoin()
+                    .where(commentLike.comment.id.in(commentIds)
+                            .and(commentLike.status.eq(CommentLikeStatus.Y)))
+                    .fetch();
+
+
+            Map<Long, List<CommentLike>> collect = commentLikes
+                    .stream().collect(Collectors.groupingBy(commentLike -> commentLike.getComment().getId()));
+
+            comments.forEach(comment -> comment.setCommentLikes(collect.get(comment.getId())));
+
 
             post.setComments(comments);
             post.setPostLikes(postLikes);

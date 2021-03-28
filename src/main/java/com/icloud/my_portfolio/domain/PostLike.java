@@ -19,8 +19,8 @@ public class PostLike {
     @JoinColumn(name = "post_id")
     private Post post;
 
+    //=누가 저장했는지 저장할 컬럼=//
     private Long userId;
-
     private String username;
 
     @Enumerated(EnumType.STRING)

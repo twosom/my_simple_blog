@@ -1,5 +1,6 @@
 package com.icloud.my_portfolio.repository.postquery.dto;
 
+import com.icloud.my_portfolio.domain.CommentLike;
 import com.icloud.my_portfolio.domain.Post;
 import com.icloud.my_portfolio.domain.PostLike;
 import lombok.Data;
@@ -22,8 +23,6 @@ public class PostViewDto {
     private String content;
 
     private List<CommentViewDto> comments;
-//    private List<PostLikeViewDto> postLikes;
-
     private List<String> likeUsers;
 
     public PostViewDto(Post post) {
@@ -37,22 +36,25 @@ public class PostViewDto {
         this.content = post.getContent();
 
         this.comments = post.getComments()
-                .stream().map(comment ->
-                        new CommentViewDto(
-                                comment.getId(),
-                                comment.getCreatedDate(),
-                                comment.getUser().getUsername(), post.getId(),
-                                comment.getContent()))
+                .stream().map(comment ->{
+                    CommentViewDto commentViewDto = new CommentViewDto(
+                            comment.getId(),
+                            comment.getCreatedDate(),
+                            comment.getUser().getUsername(), post.getId(),
+                            comment.getContent());
+
+                    if (comment.getCommentLikes() != null) {
+                        List<String> commentLikeUsers = comment.getCommentLikes()
+                                .stream().map(CommentLike::getUsername)
+                                .collect(Collectors.toList());
+
+                        commentViewDto.setLikeUsers(commentLikeUsers);
+                    }
+
+                    return commentViewDto;
+                })
                 .collect(Collectors.toList());
 
-//
-//        this.postLikes = post.getPostLikes()
-//                .stream().map(postLike ->
-//                        new PostLikeViewDto(
-//                                postLike.getId(),
-//                                post.getId(),
-//                                postLike.getUser().getUsername()))
-//                .collect(Collectors.toList());
 
         this.likeUsers = post.getPostLikes()
                 .stream().map(PostLike::getUsername)
