@@ -18,15 +18,6 @@ public class PostListDto {
 
     private int likeCount = 0;
 
-    @QueryProjection
-    public PostListDto(Long postId, String title, String content, String username, LocalDateTime createdDate, String categoryName) {
-        this.postId = postId;
-        this.title = title;
-        this.content = content;
-        this.username = username;
-        this.createdDate = createdDate;
-        this.categoryName = categoryName;
-    }
 
     public PostListDto(Post post) {
         this.postId = post.getId();
@@ -37,8 +28,6 @@ public class PostListDto {
         if (post.getCategory() != null) {
             this.categoryName = post.getCategory().getName();
         }
-        if (post.getPostLikes() != null) {
-            this.likeCount = post.getPostLikes().size();
-        }
+        this.likeCount = post.getPostLikeCount();
     }
 }

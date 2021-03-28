@@ -93,18 +93,18 @@
                 <form th:if="${!postViewDto.likeUsers.contains(#authentication.name)}" sec:authorize="isAuthenticated()" method="post"
                       th:action="@{/like/{postId}/active (postId=${postViewDto.id})}" id="activeLike">
                     <span onclick="activeLike()">
-                        <i class="bi bi-heart"><strong th:text="${postViewDto.postLikes.size()}"></strong></i>
+                        <i class="bi bi-heart"><strong th:text="${postViewDto.likeUsers.size()}"></strong></i>
                     </span>
                 </form>
                 <form th:if="${postViewDto.likeUsers.contains(#authentication.name)}" sec:authorize="isAuthenticated()" method="post"
                       th:action="@{/like/{postId}/inactive(postId=${postViewDto.id})}" id="inactiveLike">
                     <span onclick="inactiveLike()">
-                        <i class="bi bi-heart-fill"><strong th:text="${postViewDto.postLikes.size()}"></strong></i>
+                        <i class="bi bi-heart-fill"><strong th:text="${postViewDto.likeUsers.size()}"></strong></i>
                     </span>
                 </form>
                 <!-- 로그인 안 한 경우 -->
                 <span sec:authorize="!isAuthenticated()">
-                    <i class="bi bi-heart"><strong th:text="${postViewDto.postLikes.size()}"></strong></i>
+                    <i class="bi bi-heart"><strong th:text="${postViewDto.likeUsers.size()}"></strong></i>
                 </span>
             </div>
         </div>

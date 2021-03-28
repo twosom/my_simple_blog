@@ -1,13 +1,14 @@
 package com.icloud.my_portfolio.domain;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
 
 
 @Entity
-@Getter @Setter
+@Getter @Setter @NoArgsConstructor
 public class PostLike {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -18,9 +19,9 @@ public class PostLike {
     @JoinColumn(name = "post_id")
     private Post post;
 
-    @OneToOne(fetch = FetchType.LAZY, optional = false, cascade = CascadeType.ALL)
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    private Long userId;
+
+    private String username;
 
     @Enumerated(EnumType.STRING)
     private PostLikeStatus status;
@@ -28,10 +29,12 @@ public class PostLike {
 
     public void active() {
         this.status = PostLikeStatus.Y;
+        this.post.addPostLikeCount();
     }
 
     public void inactive() {
         this.status = PostLikeStatus.N;
+        this.post.removePostLikeCount();
     }
 
 
@@ -39,8 +42,10 @@ public class PostLike {
         this.post = post;
     }
 
-    public void addUser(User user) {
-        this.user = user;
-//        user.addPostLike(this);
+    public PostLike(Post post, Long userId, String username) {
+        this.post = post;
+        this.userId = userId;
+        this.username = username;
+        this.status = PostLikeStatus.Y;
     }
 }

@@ -2,6 +2,7 @@ package com.icloud.my_portfolio.repository;
 
 import com.icloud.my_portfolio.domain.*;
 import com.icloud.my_portfolio.exception.PostNotFoundException;
+import com.querydsl.core.Tuple;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.springframework.data.domain.Page;
@@ -33,20 +34,7 @@ public class PostCustomRepository {
 
     public Page<Post> findAllPosts(Pageable pageable) {
         List<Post> content = getPosts(pageable);
-        List<Long> postIds = content.stream().map(post -> post.getId())
-                .collect(Collectors.toList());
 
-        List<PostLike> postLikes = queryFactory
-                .select(postLike)
-                .from(postLike)
-                .join(postLike.post, post).fetchJoin()
-                .where(postLike.post.id.in(postIds).and(postLike.status.eq(PostLikeStatus.Y)))
-                .fetch();
-
-        Map<Long, List<PostLike>> collect = postLikes
-                .stream().collect(Collectors.groupingBy(postLike -> postLike.getPost().getId()));
-
-        content.forEach(post -> post.setPostLikes(collect.get(post.getId())));
         JPAQuery<Post> countQuery = queryFactory
                 .select(post)
                 .from(post)
@@ -91,7 +79,6 @@ public class PostCustomRepository {
                 .select(postLike)
                 .from(postLike)
                 .innerJoin(postLike.post, post).fetchJoin()
-                .innerJoin(postLike.user, user).fetchJoin()
                 .where(postLike.post.id.eq(id).and(postLike.status.eq(PostLikeStatus.Y)))
                 .fetch();
     }

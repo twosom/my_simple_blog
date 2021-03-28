@@ -1,6 +1,7 @@
 package com.icloud.my_portfolio.repository.postquery.dto;
 
 import com.icloud.my_portfolio.domain.Post;
+import com.icloud.my_portfolio.domain.PostLike;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -21,7 +22,7 @@ public class PostViewDto {
     private String content;
 
     private List<CommentViewDto> comments;
-    private List<PostLikeViewDto> postLikes;
+//    private List<PostLikeViewDto> postLikes;
 
     private List<String> likeUsers;
 
@@ -40,21 +41,21 @@ public class PostViewDto {
                         new CommentViewDto(
                                 comment.getId(),
                                 comment.getCreatedDate(),
-                                comment.getUser().getUsername(), this.id,
+                                comment.getUser().getUsername(), post.getId(),
                                 comment.getContent()))
                 .collect(Collectors.toList());
 
-
-        this.postLikes = post.getPostLikes()
-                .stream().map(postLike ->
-                        new PostLikeViewDto(
-                                postLike.getId(),
-                                post.getId(),
-                                postLike.getUser().getUsername()))
-                .collect(Collectors.toList());
+//
+//        this.postLikes = post.getPostLikes()
+//                .stream().map(postLike ->
+//                        new PostLikeViewDto(
+//                                postLike.getId(),
+//                                post.getId(),
+//                                postLike.getUser().getUsername()))
+//                .collect(Collectors.toList());
 
         this.likeUsers = post.getPostLikes()
-                .stream().map(postLike -> postLike.getUser().getUsername())
+                .stream().map(PostLike::getUsername)
                 .collect(Collectors.toList());
 
 

@@ -1,7 +1,6 @@
 package com.icloud.my_portfolio.repository.postquery;
 
 import com.icloud.my_portfolio.controller.dto.PostListDto;
-import com.icloud.my_portfolio.controller.dto.QPostListDto;
 import com.icloud.my_portfolio.domain.*;
 import com.icloud.my_portfolio.exception.PostNotFoundException;
 import com.icloud.my_portfolio.repository.postquery.dto.CommentViewDto;
@@ -31,31 +30,31 @@ public class PostQueryRepository {
 
     private final JPAQueryFactory queryFactory;
 
-    public Page<PostListDto> findAllByStatus(PostStatus postStatus, Pageable pageable) {
-        List<PostListDto> content = queryFactory
-                .select(new QPostListDto(
-                        post.id.as("postId"),
-                        post.title,
-                        post.content,
-                        user.username,
-                        post.createdDate,
-                        category.name.as("categoryName")))
-                .from(post)
-                .leftJoin(post.user, user)
-                .leftJoin(post.category, category)
-                .where(post.status.eq(postStatus))
-                .orderBy(post.createdDate.desc())
-                .offset(pageable.getOffset())
-                .limit(pageable.getPageSize())
-                .fetch();
-
-        long total = queryFactory
-                .selectFrom(post)
-                .where(post.status.eq(postStatus))
-                .fetchCount();
-
-        return new PageImpl<>(content, pageable, total);
-    }
+//    public Page<PostListDto> findAllByStatus(PostStatus postStatus, Pageable pageable) {
+//        List<PostListDto> content = queryFactory
+//                .select(new QPostListDto(
+//                        post.id.as("postId"),
+//                        post.title,
+//                        post.content,
+//                        user.username,
+//                        post.createdDate,
+//                        category.name.as("categoryName")))
+//                .from(post)
+//                .leftJoin(post.user, user)
+//                .leftJoin(post.category, category)
+//                .where(post.status.eq(postStatus))
+//                .orderBy(post.createdDate.desc())
+//                .offset(pageable.getOffset())
+//                .limit(pageable.getPageSize())
+//                .fetch();
+//
+//        long total = queryFactory
+//                .selectFrom(post)
+//                .where(post.status.eq(postStatus))
+//                .fetchCount();
+//
+//        return new PageImpl<>(content, pageable, total);
+//    }
 
     public PostViewDto findViewPost(Long id) {
         PostViewDto result = findPost(id);

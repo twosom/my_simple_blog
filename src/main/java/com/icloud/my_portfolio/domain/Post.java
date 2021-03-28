@@ -45,6 +45,17 @@ public class Post extends SuperClass {
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<PostLike> postLikes = new ArrayList<>();
 
+    private int postLikeCount;
+
+
+    public void addPostLikeCount() {
+        this.postLikeCount += 1;
+    }
+
+    public void removePostLikeCount() {
+        this.postLikeCount -= 1;
+    }
+
 //    //==연관관계 메소드==//
 //    public void setUser(User user) {
 //        this.user = user;

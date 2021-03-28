@@ -8,6 +8,7 @@ import javax.persistence.EntityManager;
 
 import java.util.List;
 
+import static com.icloud.my_portfolio.domain.QPost.*;
 import static com.icloud.my_portfolio.domain.QPostLike.*;
 import static com.icloud.my_portfolio.domain.QUser.*;
 
@@ -21,22 +22,27 @@ public class PostLikeCustomRepository {
     }
 
 
-    public PostLike findByPostIdAndUsername(Long postId, String username) {
+    public PostLike findActivePostLike(Long postId, Long userId) {
         return queryFactory
                 .select(postLike)
                 .from(postLike)
-                .join(postLike.user, user).fetchJoin()
-                .where(postLike.post.id.eq(postId).and(postLike.user.username.eq(username).and(postLike.status.eq(PostLikeStatus.Y))))
+                .where(postLike.post.id.eq(postId).and(postLike.userId.eq(userId).and(postLike.status.eq(PostLikeStatus.Y))))
                 .fetchOne();
     }
 
-    public List<PostLike> findUnActive(Long postId, String username) {
+
+    public List<PostLike> findUnActive(Long postId, Long userId) {
         return queryFactory
                 .select(postLike)
                 .from(postLike)
-                .join(postLike.user, user).fetchJoin()
-                .where(postLike.post.id.eq(postId).and(postLike.user.username.eq(username).and(postLike.status.eq(PostLikeStatus.N))))
+                .where(postLike.post.id.eq(postId).and(postLike.userId.eq(userId)))
                 .fetch();
+    }
 
+    public void updateCount() {
+        queryFactory
+                .update(post)
+                .set(post.postLikeCount, 1)
+                .execute();
     }
 }
