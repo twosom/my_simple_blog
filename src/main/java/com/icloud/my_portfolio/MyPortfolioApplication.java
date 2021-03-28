@@ -22,10 +22,10 @@ public class MyPortfolioApplication {
     @Bean
     public MailSender mailSender() {
         JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
-        mailSender.setHost("smtp.naver.com");
-        mailSender.setPort(587);
-        mailSender.setUsername("if0rever");
-        mailSender.setPassword("M1SDDCU7NPJM");
+        mailSender.setHost("SMTP");
+        mailSender.setPort("PORTNUMBER");
+        mailSender.setUsername("USERNAME");
+        mailSender.setPassword("PASSWORD");
         return mailSender;
     }
 
