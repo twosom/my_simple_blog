@@ -12,6 +12,7 @@ public class PostLikeViewDto {
     private Long postId;
     private String username;
 
+
     public PostLikeViewDto(Long id, Long postId, String username) {
         this.id = id;
         this.postId = postId;

@@ -30,7 +30,9 @@ public class PostViewDto {
         this.title = post.getTitle();
         this.username = post.getUser().getUsername();
         this.createdDate = post.getCreatedDate();
-        this.categoryName = post.getCategory().getName();
+        if (post.getCategory() != null) {
+            this.categoryName = post.getCategory().getName();
+        }
         this.content = post.getContent();
 
         this.comments = post.getComments()

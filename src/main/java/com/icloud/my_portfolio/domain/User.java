@@ -5,15 +5,18 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.LazyToOne;
+import org.hibernate.annotations.LazyToOneOption;
 
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Getter @Setter
+@Getter
+@Setter
 @NoArgsConstructor
-public class User extends SuperClass{
+public class User extends SuperClass {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -41,9 +44,8 @@ public class User extends SuperClass{
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Comment> comments = new ArrayList<>();
 
-    @OneToOne(mappedBy = "user", fetch = FetchType.LAZY)
-    private PostLike postLike;
-
+//    @OneToOne(mappedBy = "user", fetch = FetchType.LAZY, optional = false)
+//    private PostLike postLike;
 
 
     @Builder
@@ -64,7 +66,7 @@ public class User extends SuperClass{
         getComments().add(comment);
     }
 
-    public void addPostLike(PostLike postLike) {
-        this.postLike = postLike;
-    }
+//    public void addPostLike(PostLike postLike) {
+//        this.postLike = postLike;
+//    }
 }

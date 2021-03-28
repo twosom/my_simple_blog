@@ -17,6 +17,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -96,8 +97,9 @@ public class PostController {
             String username = authentication.getName();
             Post post = postQueryService.findByIdAndUsername(id, username);
             List<Category> categories = categoryService.findAll();
-            PostEditDto editPostDto = new PostEditDto(post, categories);
+            PostEditDto editPostDto = new PostEditDto(post);
             model.addAttribute("editPostDto", editPostDto);
+            model.addAttribute("categories", categories);
             return "post/edit";
         } catch (PostNotFoundException e) {
             /* id에 해당하는 게시글 찾지 못했을 시 에러메시지 추가해주기 */
@@ -108,16 +110,20 @@ public class PostController {
 
     @PostMapping("/{id}/edit")
     public String modifyPost(@PathVariable Long id,
-                             @ModelAttribute("postDto") @Valid PostDto createPost,
+                             @ModelAttribute("editPostDto") @Valid PostEditDto postEditDto,
                              BindingResult bindingResult,
                              Model model) {
 
         if (bindingResult.hasErrors()) {
-            model.addAttribute("categories", categoryService.findAll());
+
+            List<Category> categories = categoryService.findAll();
+            model.addAttribute("categories", categories);
+            model.addAttribute("editPostDto", postEditDto);
+
             return "post/edit";
         }
-        Post post = createPost.toEntity();
-        post.setCategory(new Category(createPost.getCategoryId()));
+        Post post = postEditDto.toEntity();
+        post.setCategory(new Category(postEditDto.getCategoryId()));
         postService.updatePost(id, post);
         //==수정 완료 후 게시글로 리다이렉트==//
         return "redirect:/posts/" + id;

@@ -112,7 +112,7 @@ public class PostCustomRepository {
                 .select(post)
                 .from(post)
                 .innerJoin(post.user, user).fetchJoin()
-                .innerJoin(post.category, category).fetchJoin()
+                .leftJoin(post.category, category).fetchJoin()
                 .where(post.id.eq(id).and(post.status.eq(PostStatus.Y)))
                 .fetchOne();
     }

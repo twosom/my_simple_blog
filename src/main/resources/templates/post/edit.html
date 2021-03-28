@@ -9,10 +9,9 @@
 <div th:replace="fragments/nav.html :: fragment-nav('Post')"></div>
 
 <form class="form-horizontal well bs-component col-lg-10 col-lg-offset-1"
-      th:action="@{/posts/{id}/edit(id=${editPostDto.id})}"
+      th:action="@{/posts/{id}/edit (id=${editPostDto.id})}"
       th:object="${editPostDto}" method="post" th:id="postDto">
     <fieldset>
-        <!--        <input type="hidden" th:field="*{userId}"/>-->
         <div class="form-group" th:classappend="(${#fields.hasErrors('title')}? ' has-error')">
             <label for="title" class="col-lg-2 control-label">Title</label>
             <div class="col-lg-10">
@@ -25,7 +24,7 @@
 
         <div class="form-group" th:classappend="(${#fields.hasErrors('categoryId')}? ' has-error')">
             <label class="col-lg-2 control-label">categories</label>
-            <div class="btn-group" data-toggle="buttons" th:each="category : ${editPostDto.categories}">
+            <div class="btn-group" data-toggle="buttons" th:each="category : ${categories}">
                 <label class="btn btn-primary active">
                     <input th:onclick="changeCategory([[${category.name}]])" name="categoryId" type="radio"
                            th:text="${category.name}" th:value="${category.id}"/>

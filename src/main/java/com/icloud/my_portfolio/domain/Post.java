@@ -10,10 +10,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Getter @Setter
+@Getter
+@Setter
 @NoArgsConstructor
 @ToString(of = {"id", "content", "title", "status"})
-public class Post extends SuperClass{
+public class Post extends SuperClass {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,7 +32,7 @@ public class Post extends SuperClass{
     private PostStatus status;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name=  "category_id")
+    @JoinColumn(name = "category_id")
     private Category category;
 
     @OneToMany(mappedBy = "post")
@@ -41,7 +42,7 @@ public class Post extends SuperClass{
     @JoinColumn(name = "user_id")
     private User user;
 
-    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<PostLike> postLikes = new ArrayList<>();
 
 //    //==연관관계 메소드==//

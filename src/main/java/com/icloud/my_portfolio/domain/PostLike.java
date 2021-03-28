@@ -10,7 +10,7 @@ import javax.persistence.*;
 @Getter @Setter
 public class PostLike {
 
-    @Id @GeneratedValue
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "post_like_id")
     private Long id;
 
@@ -18,8 +18,8 @@ public class PostLike {
     @JoinColumn(name = "post_id")
     private Post post;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
+    @OneToOne(fetch = FetchType.LAZY, optional = false, cascade = CascadeType.ALL)
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
     @Enumerated(EnumType.STRING)
@@ -41,6 +41,6 @@ public class PostLike {
 
     public void addUser(User user) {
         this.user = user;
-        user.addPostLike(this);
+//        user.addPostLike(this);
     }
 }

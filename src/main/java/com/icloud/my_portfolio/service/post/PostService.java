@@ -4,6 +4,7 @@ package com.icloud.my_portfolio.service.post;
 import com.icloud.my_portfolio.controller.dto.PostListDto;
 import com.icloud.my_portfolio.domain.CommentStatus;
 import com.icloud.my_portfolio.domain.Post;
+import com.icloud.my_portfolio.domain.PostLikeStatus;
 import com.icloud.my_portfolio.domain.PostStatus;
 import com.icloud.my_portfolio.exception.PostNotFoundException;
 import com.icloud.my_portfolio.repository.PostCustomRepository;
@@ -57,6 +58,8 @@ public class PostService {
         try {
             Post oldPost = postRepositoryWithJpql.findByIdAndStatus(id, PostStatus.Y);
             oldPost.setStatus(PostStatus.N);
+            oldPost.getPostLikes()
+                    .forEach(postLike -> postLike.setStatus(PostLikeStatus.N));
         } catch (PostNotFoundException e) {
             throw e;
         }
