@@ -31,7 +31,7 @@ public class PostLikeService {
             PostLike postLike = new PostLike(post, userId, username);
             postLike.active();
             postLikeRepository.save(postLike);
-            postLikeCustomRepository.updateCount();
+            postLikeCustomRepository.updateCount(postId);
         }
     }
 

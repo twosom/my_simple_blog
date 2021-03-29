@@ -33,7 +33,7 @@ public class CommentLikeService {
             CommentLike commentLike = new CommentLike(comment, userId, username);
             commentLike.active();
             commentLikeRepository.save(commentLike);
-            commentLikeCustomRepository.updateCount();
+            commentLikeCustomRepository.updateCount(commentId);
         }
     }
 
