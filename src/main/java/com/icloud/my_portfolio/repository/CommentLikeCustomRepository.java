@@ -37,7 +37,7 @@ public class CommentLikeCustomRepository {
     public void updateCount(Long commentId) {
         queryFactory
                 .update(comment)
-                .set(comment.commentLikeCount, 1)
+                .set(comment.commentLikeCount, comment.commentLikeCount.add(1))
                 .where(comment.id.eq(commentId))
                 .execute();
     }

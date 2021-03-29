@@ -46,7 +46,7 @@ public class PostLikeCustomRepository {
     public void updateCount(Long postId) {
         queryFactory
                 .update(post)
-                .set(post.postLikeCount, 1)
+                .set(post.postLikeCount, post.postLikeCount.add(1))
                 .where(post.id.eq(postId))
                 .execute();
     }

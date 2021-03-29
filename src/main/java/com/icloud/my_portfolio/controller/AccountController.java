@@ -35,7 +35,6 @@ public class AccountController {
 
     @PostMapping("/register")
     public String registerUser(@ModelAttribute UserDto userDto, Model model, RedirectAttributes rttr) {
-        System.out.println("userDto = " + userDto);
         User user = userDto.toEntity();
         try {
             userService.join(user);
