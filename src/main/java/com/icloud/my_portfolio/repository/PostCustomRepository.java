@@ -2,7 +2,14 @@ package com.icloud.my_portfolio.repository;
 
 import com.icloud.my_portfolio.domain.*;
 import com.icloud.my_portfolio.exception.PostNotFoundException;
+import com.icloud.my_portfolio.repository.postquery.dto.CommentViewDto;
+import com.icloud.my_portfolio.repository.postquery.dto.PostViewDto;
 import com.querydsl.core.Tuple;
+import com.querydsl.core.types.ExpressionUtils;
+import com.querydsl.core.types.Projections;
+import com.querydsl.core.types.SubQueryExpression;
+import com.querydsl.core.types.dsl.Expressions;
+import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.springframework.data.domain.Page;
@@ -11,7 +18,7 @@ import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
-import javax.validation.constraints.Null;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -56,6 +63,101 @@ public class PostCustomRepository {
                 .limit(pageable.getPageSize())
                 .fetch();
         return content;
+    }
+
+    /**
+     * private Long id;
+     * private String title;
+     * private String username;
+     * private LocalDateTime createdDate;
+     * private String categoryName;
+     * private String content;
+     * <p>
+     * private List<CommentViewDto> comments;
+     * private List<String> likeUsers;
+     * <p>
+     * (CommentViewDto Properties)
+     * private Long id;
+     * private LocalDateTime createdDate;
+     * private String username;
+     * private Long postId;
+     * private String content;
+     * private List<String> likeUsers = new ArrayList<>();
+     */
+    public PostViewDto findOneOptimization(Long id) {
+        PostViewDto findPostDto = findPostAsDto(id);
+
+        List<String> postLikeUsernames = findPostLikeUsernames(id);
+        findPostDto.setLikeUsers(postLikeUsernames);
+
+        List<CommentViewDto> findCommentDto = findCommentAsDto(id);
+        findCommentDto.forEach(comment -> comment.setPostId(id));
+
+        List<Long> commentIds = findCommentDto.stream().map(CommentViewDto::getId)
+                .collect(Collectors.toList());
+
+        /* commentId 와 좋아요 누른 username 이 한 쌍 */
+        List<Tuple> findCommentLikeUsers = queryFactory
+                .select(commentLike.comment.id, commentLike.username)
+                .from(commentLike)
+                .where(commentLike.comment.id.in(commentIds).and(commentLike.status.eq(CommentLikeStatus.Y)))
+                .fetch();
+
+
+        /* CommentDto 리스트를 순회하면서 좋아요 한 유저이름들 추가 */
+        for (CommentViewDto commentViewDto : findCommentDto) {
+            List<String> likeUsers = new ArrayList<>();
+
+            findCommentLikeUsers
+                    .forEach(likeUser -> {
+                        if (commentViewDto.getId() == likeUser.get(commentLike.comment.id)) {
+                            likeUsers.add(likeUser.get(commentLike.username));
+                        }
+                    });
+            commentViewDto.setLikeUsers(likeUsers);
+        }
+
+        findPostDto.setComments(findCommentDto);
+        return findPostDto;
+    }
+
+    private List<String> findPostLikeUsernames(Long id) {
+        return queryFactory
+                .select(postLike.username)
+                .from(postLike)
+                .where(postLike.post.id.eq(id).and(postLike.status.eq(PostLikeStatus.Y)))
+                .fetch();
+    }
+
+    private List<CommentViewDto> findCommentAsDto(Long id) {
+        return queryFactory
+                .select(Projections.fields(
+                        CommentViewDto.class,
+                        comment.id,
+                        comment.createdDate,
+                        comment.user.username,
+                        comment.content))
+                .from(comment)
+                .innerJoin(comment.user, user)
+                .where(comment.post.id.eq(id))
+                .fetch();
+    }
+
+    private PostViewDto findPostAsDto(Long id) {
+        return queryFactory
+                .select(Projections.fields(
+                        PostViewDto.class,
+                        post.id,
+                        post.title,
+                        post.user.username,
+                        post.createdDate,
+                        post.category.name,
+                        post.content))
+                .from(post)
+                .innerJoin(post.user, user)
+                .leftJoin(post.category, category)
+                .where(post.id.eq(id).and(post.status.eq(PostStatus.Y)))
+                .fetchOne();
     }
 
     public Post findOne(Long id) {

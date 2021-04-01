@@ -1,12 +1,14 @@
 package com.icloud.my_portfolio.repository.postquery.dto;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 @Data
+@NoArgsConstructor
 public class CommentViewDto {
 
     private Long id;

@@ -28,6 +28,14 @@ public class PostQueryService {
         return new PostViewDto(findPost);
     }
 
+
+    //== 게시글 단건 조회 최적화 버전 ==//
+    public PostViewDto findOneOptimization(Long id) {
+        return postCustomRepository.findOneOptimization(id);
+    }
+
+
+
     //== 인덱스 페이지용 포스트 조회 ==//
     public Page<PostListDto> findPosts(Pageable pageable) {
         Page<Post> allPosts = postCustomRepository.findAllPosts(pageable);
