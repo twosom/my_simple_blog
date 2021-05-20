@@ -139,7 +139,7 @@ public class PostCustomRepository {
                         comment.content))
                 .from(comment)
                 .innerJoin(comment.user, user)
-                .where(comment.post.id.eq(id))
+                .where(comment.post.id.eq(id).and(comment.status.eq(CommentStatus.Y)))
                 .fetch();
     }
 
