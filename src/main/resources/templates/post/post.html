@@ -145,7 +145,7 @@
                         <!-- 로그인 한 경우 -->
                         <div sec:authorize="isAuthenticated()">
                                 <span th:onclick="|commentLikeEvent('${comment.id}')|">
-                                    <i id="commentLikeCount"
+                                    <i th:id="${'commentLikeCount' + comment.id}"
                                        th:class="${comment.likeUsers.contains(#authentication.name) ? 'bi bi-heart-fill' : 'bi bi-heart' }">
                                         <strong th:text="${comment.likeUsers.size()}"></strong>
                                     </i>
@@ -218,7 +218,7 @@
                 return response.json();
             })
             .then((result) => {
-                const commentLikeCountElement = document.querySelector('#commentLikeCount');
+                const commentLikeCountElement = document.querySelector('#commentLikeCount' + commentId);
                 switch (result.status) {
                     case 'N':
                         commentLikeCountElement.setAttribute('class', 'bi bi-heart');
