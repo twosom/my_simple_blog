@@ -2,10 +2,10 @@ spring:
   datasource:
     username: root
     #    password: Mynewc@r123
-#    password: 1234
+    password: 1234
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/blog
-#    url: jdbc:mysql://10.178.0.5:3306/portfolio
+#    url: jdbc:mysql://localhost:3306/blog
+    url: jdbc:mysql://10.178.0.5:3306/portfolio
 
   jpa:
     hibernate:
@@ -22,7 +22,7 @@ spring:
         default-page-size: 5
   redis:
     host: 10.178.0.7
-    
+
 
 
 
