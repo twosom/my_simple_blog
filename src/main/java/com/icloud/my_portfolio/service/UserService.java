@@ -30,7 +30,6 @@ public class UserService implements UserDetailsService, Serializable {
 
     private final UserJpaRepository userJpaRepository;
     private final PasswordEncoder passwordEncoder;
-    private final MailSender mailSender;
 
     public User join(User user) {
 
@@ -46,7 +45,6 @@ public class UserService implements UserDetailsService, Serializable {
         user.setRole(Role.ADMIN);
         user.setCreatedDate(LocalDateTime.now());
         userJpaRepository.save(user);
-        sendMailMessage(user);
         return user;
     }
 
@@ -67,15 +65,7 @@ public class UserService implements UserDetailsService, Serializable {
         }
     }
 
-    private void sendMailMessage(User user) {
-        SimpleMailMessage mailMessage = new SimpleMailMessage();
-        mailMessage.setFrom("if0rever@naver.com");
-        mailMessage.setTo(user.getEmail());
-        mailMessage.setSubject(user.getUsername() + "님의 가입을 축하드립니다.");
-        mailMessage.setText(user.getUsername() + "님의 가입을 진심으로 축하드립니다.\n 현재 " + user.getUsername() + "님의 등급은 " +
-                user.getRole() + "입니다.");
-        mailSender.send(mailMessage);
-    }
+
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
