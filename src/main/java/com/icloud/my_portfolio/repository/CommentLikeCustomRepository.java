@@ -34,6 +34,15 @@ public class CommentLikeCustomRepository {
 
     }
 
+    public CommentLike findCommentLike(Long commentId, Long userId) {
+        return queryFactory
+                .select(commentLike)
+                .from(commentLike)
+                .where(commentLike.comment.id.eq(commentId)
+                        .and(commentLike.userId.eq(userId)))
+                .fetchOne();
+    }
+
     public void updateCount(Long commentId) {
         queryFactory
                 .update(comment)
@@ -49,6 +58,14 @@ public class CommentLikeCustomRepository {
                 .where(commentLike.comment.id.eq(commentId).
                         and(commentLike.userId.eq(userId).
                                 and(commentLike.status.eq(CommentLikeStatus.Y))))
+                .fetchOne();
+    }
+
+    public Integer getCount(Long commentId) {
+        return queryFactory
+                .select(comment.commentLikeCount)
+                .from(comment)
+                .where(comment.id.eq(commentId))
                 .fetchOne();
     }
 }

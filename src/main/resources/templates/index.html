@@ -7,7 +7,6 @@
 <div th:replace="fragments/header.html :: fragment-header('Somang\'s Portfolio for Spring Boot + JPA')"></div>
 
 
-
 <body>
 
 <div th:replace="fragments/nav.html :: fragment-nav('Home')"></div>
@@ -25,7 +24,7 @@
                 <a th:href="@{/posts/{id}(id=${post.postId})}">
                     <h2 class="post-title" th:text="${post.title}"></h2>
                     <span style="font-size: 1em; color: tomato"
-                          th:if="${#dates.day(#dates.createNow()) == #temporals.day(post.createdDate)}">
+                          th:if="${#temporals.format(#temporals.createNow(), 'yyyy-MM-dd').equals(#temporals.format(post.createdDate, 'yyyy-MM-dd'))}">
                         <i class="fas fa-circle"></i><span>New</span>
                     </span>
 

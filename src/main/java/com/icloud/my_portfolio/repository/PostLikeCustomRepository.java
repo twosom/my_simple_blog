@@ -50,4 +50,22 @@ public class PostLikeCustomRepository {
                 .where(post.id.eq(postId))
                 .execute();
     }
+
+    public Integer getCount(Long postId) {
+        return queryFactory
+                .select(post.postLikeCount)
+                .from(post)
+                .where(post.id.eq(postId))
+                .fetchOne();
+    }
+
+    public PostLike findLike(Long postId, Long userId) {
+        return queryFactory
+                .select(postLike)
+                .from(postLike)
+                .innerJoin(postLike.post, post).fetchJoin()
+                .where(postLike.post.id.eq(postId)
+                        .and(postLike.userId.eq(userId)))
+                .fetchOne();
+    }
 }

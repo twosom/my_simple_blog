@@ -25,9 +25,7 @@ public class PostListDto {
         this.content = post.getContent();
         this.username = post.getUser().getUsername();
         this.createdDate = post.getCreatedDate();
-        if (post.getCategory() != null) {
-            this.categoryName = post.getCategory().getName();
-        }
+        this.categoryName = post.getCategory() != null ? post.getCategory().getName() : "";
         this.likeCount = post.getPostLikeCount();
     }
 }

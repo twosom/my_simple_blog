@@ -28,7 +28,7 @@ public class MyPortfolioApplication {
         mailSender.setHost("smtp.naver.com");
         mailSender.setPort(587);
         mailSender.setUsername("if0rever");
-        mailSender.setPassword("M1SDDCU7NPJM");
+        mailSender.setPassword("F7D8NCRVXE9L");
         return mailSender;
     }
 

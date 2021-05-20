@@ -9,7 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
+import java.util.LinkedHashMap;
 
 @Service
 @Transactional
@@ -21,20 +21,47 @@ public class CommentLikeService {
     private final UserCustomRepository userCustomRepository;
 
 
-    public void activeLike(Long commentId, String username) {
+    public LinkedHashMap<String, Object> commentLikeEvent(Long commentId, String username) {
         Long userId = userCustomRepository.findIdByUsername(username);
 
-        List<CommentLike> findCommentLike = commentLikeCustomRepository.findInactive(commentId, userId);
-        if (!findCommentLike.isEmpty()) {
-            CommentLike commentLike = findCommentLike.get(0);
-            commentLike.active();
-        } else {
+//        List<CommentLike> findCommentLike = commentLikeCustomRepository.findInactive(commentId, userId);
+//        if (!findCommentLike.isEmpty()) {
+//            CommentLike commentLike = findCommentLike.get(0);
+//            commentLike.active();
+//        } else {
+//            Comment comment = new Comment(commentId);
+//            CommentLike commentLike = new CommentLike(comment, userId, username);
+//            commentLike.active();
+//            commentLikeRepository.save(commentLike);
+//            commentLikeCustomRepository.updateCount(commentId);
+//        }
+
+
+        CommentLike findCommentLike = commentLikeCustomRepository.findCommentLike(commentId, userId);
+        try {
+            switch (findCommentLike.getStatus()) {
+                case Y:
+                    // 이미 좋아요가 눌린 경우
+                    findCommentLike.inactive();
+                    break;
+                case N:
+                    // 좋아요를 눌렀다가 취소한 경우
+                    findCommentLike.active();
+                    break;
+            }
+        } catch (NullPointerException e) {
             Comment comment = new Comment(commentId);
-            CommentLike commentLike = new CommentLike(comment, userId, username);
-            commentLike.active();
-            commentLikeRepository.save(commentLike);
+            findCommentLike = new CommentLike(comment, userId, username);
+            findCommentLike.active();
+            commentLikeRepository.save(findCommentLike);
             commentLikeCustomRepository.updateCount(commentId);
         }
+
+        LinkedHashMap<String, Object> result = new LinkedHashMap<>();
+        result.put("status", findCommentLike.getStatus());
+        result.put("count", commentLikeCustomRepository.getCount(commentId));
+
+        return result;
     }
 
     public void inactiveLike(Long commentId, String username) {

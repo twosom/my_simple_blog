@@ -92,20 +92,13 @@
             <div class="container">
 
                 <!-- 로그인 한 경우 -->
-                <form th:if="${!postViewDto.likeUsers.contains(#authentication.name)}" sec:authorize="isAuthenticated()"
-                      method="post"
-                      th:action="@{/postlike/{postId}/active (postId=${postViewDto.id})}" id="activePostLike">
-                    <span onclick="activePostLike()">
-                        <i class="bi bi-heart"><strong th:text="${postViewDto.likeUsers.size()}"></strong></i>
+                <div sec:authorize="isAuthenticated()">
+                    <span th:onclick="|postLikeEvent('${postViewDto.id}')|">
+                        <i id="postLikeCount"
+                           th:class="${postViewDto.likeUsers.contains(#authentication.name)} ? 'bi bi-heart-fill' : 'bi bi-heart'"><strong
+                                th:text="${postViewDto.likeUsers.size()}"></strong></i>
                     </span>
-                </form>
-                <form th:if="${postViewDto.likeUsers.contains(#authentication.name)}" sec:authorize="isAuthenticated()"
-                      method="post"
-                      th:action="@{/postlike/{postId}/inactive(postId=${postViewDto.id})}" id="inactivePostLike">
-                    <span onclick="inactivePostLike()">
-                        <i class="bi bi-heart-fill"><strong th:text="${postViewDto.likeUsers.size()}"></strong></i>
-                    </span>
-                </form>
+                </div>
                 <!-- 로그인 안 한 경우 -->
                 <span sec:authorize="!isAuthenticated()">
                     <i class="bi bi-heart"><strong th:text="${postViewDto.likeUsers.size()}"></strong></i>
@@ -150,27 +143,25 @@
                              th:text="${#temporals.format(comment.createdDate, 'yyyy-MM-dd hh:mm:ss EEE')}">
                         </div>
                         <!-- 로그인 한 경우 -->
-                        <form th:if="${!comment.likeUsers.contains(#authentication.name)}"
-                              sec:authorize="isAuthenticated()" method="post"
-                              th:action="@{/commentlike/{commentId}/active/{postId} (commentId=${comment.id}, postId=${postViewDto.id}) }"
-                              id="activeCommentLike">
-                                <span onclick="activeCommentLike()">
-                                    <i class="bi bi-heart">
+                        <div sec:authorize="isAuthenticated()">
+                                <span th:onclick="|commentLikeEvent('${comment.id}')|">
+                                    <i id="commentLikeCount"
+                                       th:class="${comment.likeUsers.contains(#authentication.name) ? 'bi bi-heart-fill' : 'bi bi-heart' }">
                                         <strong th:text="${comment.likeUsers.size()}"></strong>
                                     </i>
                                 </span>
-                        </form>
+                        </div>
 
-                        <form th:if="${comment.likeUsers.contains(#authentication.name)}"
-                              sec:authorize="isAuthenticated()" method="post"
-                              th:action="@{/commentlike/{commentId}/inactive/{postId} (commentId=${comment.id}, postId=${postViewDto.id}) }"
-                              id="inactiveCommentLike">
-                                <span onclick="inactiveCommentLike()">
-                                    <i class="bi bi-heart-fill">
-                                        <strong th:text="${comment.likeUsers.size()}"></strong>
-                                    </i>
-                                </span>
-                        </form>
+                        <!--                        <form th:if="${comment.likeUsers.contains(#authentication.name)}"-->
+                        <!--                              sec:authorize="isAuthenticated()" method="post"-->
+                        <!--                              th:action="@{/commentlike/{commentId}/inactive (commentId=${comment.id})}"-->
+                        <!--                              id="inactiveCommentLike">-->
+                        <!--                                <span onclick="inactiveCommentLike()">-->
+                        <!--                                    <i class="bi bi-heart-fill">-->
+                        <!--                                        <strong th:text="${comment.likeUsers.size()}"></strong>-->
+                        <!--                                    </i>-->
+                        <!--                                </span>-->
+                        <!--                        </form>-->
 
                         <!-- 로그인 안 한 경우 -->
                         <span sec:authorize="!isAuthenticated()">
@@ -200,20 +191,46 @@
 <!-- Footer -->
 <div th:replace="fragments/footer_without_pager.html :: fragment-footer-without-pager"></div>
 <script>
-    function activePostLike() {
-        document.getElementById('activePostLike').submit();
+    async function postLikeEvent(postId) {
+        await fetch('/postlike/' + postId, {method: 'POST'})
+            .then((response) => {
+                return response.json();
+            })
+            .then((result) => {
+                const postLikeCountElement = document.querySelector('#postLikeCount');
+                switch (result.status) {
+                    case 'N':
+                        postLikeCountElement.setAttribute('class', 'bi bi-heart');
+                        break;
+                    case 'Y':
+                        postLikeCountElement.setAttribute('class', 'bi bi-heart-fill');
+                        break;
+                }
+
+                postLikeCountElement.innerText = result.count;
+            });
+
     }
 
-    function inactivePostLike() {
-        document.getElementById('inactivePostLike').submit();
-    }
+    async function commentLikeEvent(commentId) {
+        await fetch('/commentlike/' + commentId, {method: 'POST'})
+            .then((response) => {
+                return response.json();
+            })
+            .then((result) => {
+                const commentLikeCountElement = document.querySelector('#commentLikeCount');
+                switch (result.status) {
+                    case 'N':
+                        commentLikeCountElement.setAttribute('class', 'bi bi-heart');
+                        break;
+                    case 'Y':
+                        commentLikeCountElement.setAttribute('class', 'bi bi-heart-fill');
+                        break;
+                }
 
-    function activeCommentLike() {
-        document.getElementById('activeCommentLike').submit();
-    }
+                commentLikeCountElement.innerText = result.count;
+            })
 
-    function inactiveCommentLike() {
-        document.getElementById('inactiveCommentLike').submit();
     }
 </script>
 

@@ -2,9 +2,7 @@ package com.icloud.my_portfolio.controller;
 
 
 import com.icloud.my_portfolio.controller.dto.PostListDto;
-import com.icloud.my_portfolio.repository.postquery.PostQueryRepository;
 import com.icloud.my_portfolio.service.post.PostQueryService;
-import com.icloud.my_portfolio.service.post.PostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -26,8 +24,6 @@ public class IndexController {
         model.addAttribute("posts", posts);
         return "index";
     }
-
-
 
 
     @GetMapping("/about")
