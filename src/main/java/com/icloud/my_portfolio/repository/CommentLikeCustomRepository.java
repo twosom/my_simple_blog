@@ -2,6 +2,7 @@ package com.icloud.my_portfolio.repository;
 
 import com.icloud.my_portfolio.domain.CommentLike;
 import com.icloud.my_portfolio.domain.CommentLikeStatus;
+import com.icloud.my_portfolio.domain.CommentStatus;
 import com.icloud.my_portfolio.domain.QComment;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.springframework.stereotype.Repository;
@@ -64,6 +65,14 @@ public class CommentLikeCustomRepository {
     public Integer getCount(Long commentId) {
         return queryFactory
                 .select(comment.commentLikeCount)
+                .from(comment)
+                .where(comment.id.eq(commentId))
+                .fetchOne();
+    }
+
+    public CommentStatus getCommentStatusById(Long commentId) {
+        return queryFactory
+                .select(comment.status)
                 .from(comment)
                 .where(comment.id.eq(commentId))
                 .fetchOne();

@@ -1,6 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
 <div th:replace="fragments/header.html :: fragment-header(${postViewDto.title})"></div>
 
@@ -113,28 +112,29 @@
 <div class="row" style="padding-top: 100px;">
     <div class="col-lg-8-offset-2 col-md-10 col-md-offset-1">
         <h4 id="addComment">댓글을 남겨주세요.</h4>
-        <form th:action="@{/comments}" th:object="${commentDto}" method="post" th:id="comment">
+        <div th:id="comment">
             <input type="hidden" th:if="${#authentication.name}" name="username" id="username"
                    th:value="${#authentication.name}"/>
             <input type="hidden" th:value="${postViewDto.id}" id="postId" name="postId"/>
 
-            <div class="well" th:classappend="(${#fields.hasErrors('content')}? ' has-error')">
+            <div class="well">
                 <input type="text" class="form-control input-lg" id="content" name="content" placeholder="댓글내용"/>
-                <div th:if="${#fields.hasErrors('content')}" class="alert alert-danger" role="alert"
-                     th:errors="*{content}"></div>
                 <ul class="pager" style="text-align:right;">
                     <li class="next">
-                        <button type="submit" class="btn btn-primary">Submit</button>
+                        <!--                        <button type="submit" class="btn btn-primary">Submit</button>-->
+                        <button sec:authorize="isAuthenticated()" type="button" onclick="sendPostComment()"
+                                class="btn btn-primary">Submit
+                        </button>
                     </li>
                 </ul>
             </div>
-        </form>
+        </div>
 
-        <ul class="media-list comments" th:each="comment : ${postViewDto.comments}">
+        <ul class="media-list comments" id="commentList" th:each="comment : ${postViewDto.comments}">
             <li class="media">
                 <div class="media-body">
                         <span style="font-size: 1em; color: tomato"
-                              th:if="${#dates.day(#dates.createNow()) == #temporals.day(comment.createdDate)}">
+                              th:if="${#temporals.format(#temporals.createNow(), 'yyyy-MM-dd').equals(#temporals.format(comment.createdDate, 'yyyy-MM-dd'))}">
                         <i class="fas fa-circle"></i><span>New</span>
                     </span>
                     <h5 class="media-heading pull-left" th:text="${comment.username}">twosom</h5>
@@ -151,18 +151,6 @@
                                     </i>
                                 </span>
                         </div>
-
-                        <!--                        <form th:if="${comment.likeUsers.contains(#authentication.name)}"-->
-                        <!--                              sec:authorize="isAuthenticated()" method="post"-->
-                        <!--                              th:action="@{/commentlike/{commentId}/inactive (commentId=${comment.id})}"-->
-                        <!--                              id="inactiveCommentLike">-->
-                        <!--                                <span onclick="inactiveCommentLike()">-->
-                        <!--                                    <i class="bi bi-heart-fill">-->
-                        <!--                                        <strong th:text="${comment.likeUsers.size()}"></strong>-->
-                        <!--                                    </i>-->
-                        <!--                                </span>-->
-                        <!--                        </form>-->
-
                         <!-- 로그인 안 한 경우 -->
                         <span sec:authorize="!isAuthenticated()">
                                 <i class="bi bi-heart">
@@ -194,7 +182,10 @@
     async function postLikeEvent(postId) {
         await fetch('/postlike/' + postId, {method: 'POST'})
             .then((response) => {
-                return response.json();
+                if (response.status === 200) {
+                    return response.json();
+                }
+                throw new Error('해당 게시글은 이미 삭제되었습니다.');
             })
             .then((result) => {
                 const postLikeCountElement = document.querySelector('#postLikeCount');
@@ -208,14 +199,21 @@
                 }
 
                 postLikeCountElement.innerText = result.count;
-            });
+            })
+            .catch(error => {
+                alert(error.message);
+                window.location = '/';
+            })
 
     }
 
     async function commentLikeEvent(commentId) {
         await fetch('/commentlike/' + commentId, {method: 'POST'})
             .then((response) => {
-                return response.json();
+                if (response.status === 200) {
+                    return response.json();
+                }
+                throw new Error('해당 댓글이 이미 삭제되었습니다.');
             })
             .then((result) => {
                 const commentLikeCountElement = document.querySelector('#commentLikeCount' + commentId);
@@ -230,6 +228,52 @@
 
                 commentLikeCountElement.innerText = result.count;
             })
+            .catch(error => {
+                alert(error.message);
+                window.location = '/posts/' + document.querySelector('#postId').value;
+            })
+
+    }
+
+    async function sendPostComment() {
+        let textField = document.querySelector('#content');
+        const content = textField.value;
+        if (content.trim().length === 0 || content.trim() === '') {
+            alert('내용을 입력해주세요.');
+
+            return;
+        }
+
+        const username = document.querySelector('#username').value;
+
+        const postId = document.querySelector('#postId').value;
+
+        const data = {
+            content: content,
+            postId: postId,
+            username: username,
+        }
+
+        await fetch('/comments', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        }).then(response => {
+            if (response.status === 201) {
+                return response.text();
+            } else {
+                throw new Error();
+            }
+        }).then(result => {
+            console.log(result);
+            alert('댓글 작성이 완료되었습니다');
+            window.location = '/posts/' + postId;
+        }).catch(reason => {
+            alert(reason);
+        });
+
 
     }
 </script>
