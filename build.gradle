@@ -57,9 +57,12 @@ dependencies {
     //==Thymeleaf + SpringSecurity==//
     implementation group: 'org.thymeleaf.extras', name: 'thymeleaf-extras-springsecurity5', version: '3.0.4.RELEASE'
 
-    //==파일 업로드를 위한 dependency==//
-    implementation group: 'commons-io', name: 'commons-io', version: '2.8.0'
-    implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.12.0'
+    // SPRING DATA REDIS
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-redis', version: '2.4.5'
+
+    // SPRING SESSION
+    implementation group: 'org.springframework.session', name: 'spring-session', version: '1.3.5.RELEASE'
+    
 }
 
 //querydsl 추가 시작

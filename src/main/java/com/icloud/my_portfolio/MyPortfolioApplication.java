@@ -7,12 +7,14 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.mail.MailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
+import org.springframework.session.data.redis.config.annotation.web.http.EnableRedisHttpSession;
 import org.springframework.stereotype.Component;
 import org.thymeleaf.dialect.springdata.SpringDataDialect;
 
 import javax.persistence.EntityManager;
 
 
+@EnableRedisHttpSession
 @SpringBootApplication
 @Component
 public class MyPortfolioApplication {
