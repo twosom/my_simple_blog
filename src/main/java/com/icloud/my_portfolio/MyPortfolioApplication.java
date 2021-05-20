@@ -51,15 +51,6 @@ public class MyPortfolioApplication {
         SpringApplication.run(MyPortfolioApplication.class, args);
     }
 
-    // REDIS BEAN
-    public CacheManager userCacheManager(RedisConnectionFactory connectionFactory) {
-        RedisCacheConfiguration redisCacheConfiguration = RedisCacheConfiguration.defaultCacheConfig()
-                .serializeKeysWith(RedisSerializationContext.SerializationPair.fromSerializer(new StringRedisSerializer()))
-                .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(new GenericJackson2JsonRedisSerializer()))
-                .entryTtl(Duration.ofMillis(3L));
 
-        return RedisCacheManager.RedisCacheManagerBuilder.fromConnectionFactory(connectionFactory)
-                .cacheDefaults(redisCacheConfiguration).build();
-    }
 
 }
