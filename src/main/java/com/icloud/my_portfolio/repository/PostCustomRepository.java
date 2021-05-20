@@ -129,7 +129,7 @@ public class PostCustomRepository {
                 .fetch();
     }
 
-    private List<CommentViewDto> findCommentAsDto(Long id) {
+    public List<CommentViewDto> findCommentAsDto(Long id) {
         return queryFactory
                 .select(Projections.fields(
                         CommentViewDto.class,
@@ -238,5 +238,13 @@ public class PostCustomRepository {
         }
 
 
+    }
+
+    public PostStatus getStatusById(Long postId) {
+        return queryFactory
+                .select(post.status)
+                .from(post)
+                .where(post.id.eq(postId))
+                .fetchOne();
     }
 }

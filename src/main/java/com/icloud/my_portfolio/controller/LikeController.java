@@ -1,5 +1,8 @@
 package com.icloud.my_portfolio.controller;
 
+import com.icloud.my_portfolio.domain.Comment;
+import com.icloud.my_portfolio.exception.CommentDeletedException;
+import com.icloud.my_portfolio.exception.PostDeletedException;
 import com.icloud.my_portfolio.service.CommentLikeService;
 import com.icloud.my_portfolio.service.PostLikeService;
 import lombok.RequiredArgsConstructor;
@@ -24,24 +27,44 @@ public class LikeController {
     @PostMapping("/postlike/{postId}")
     @ResponseBody
     public ResponseEntity<LinkedHashMap<String, Object>> postLikeClickEvent(@PathVariable Long postId, Authentication authentication) {
-        //==현재 로그인한 유저 이름 가져오기==//
-        String username = authentication.getName();
-        LinkedHashMap<String, Object> result = postLikeService.postLikeEvent(postId, username);
 
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(result);
+        try {
+            //==현재 로그인한 유저 이름 가져오기==//
+            String username = authentication.getName();
+            LinkedHashMap<String, Object> result = postLikeService.postLikeEvent(postId, username);
+
+            return ResponseEntity
+                    .status(HttpStatus.OK)
+                    .body(result);
+
+        } catch (PostDeletedException e) {
+
+            LinkedHashMap<String, Object> result = new LinkedHashMap<>();
+            result.put("error", "해당 게시글이 삭제되었습니다.");
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(result);
+        }
+
     }
 
     @PostMapping("/commentlike/{commentId}")
     @ResponseBody
     public ResponseEntity<LinkedHashMap<String, Object>> activeCommentLike(@PathVariable Long commentId, Authentication authentication) {
-        //==현재 로그인한 유저 이름 가져오기==//
-        String username = authentication.getName();
-        LinkedHashMap<String, Object> result = commentLikeService.commentLikeEvent(commentId, username);
+        try {
+            //==현재 로그인한 유저 이름 가져오기==//
+            String username = authentication.getName();
+            LinkedHashMap<String, Object> result = commentLikeService.commentLikeEvent(commentId, username);
 
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(result);
+            return ResponseEntity
+                    .status(HttpStatus.OK)
+                    .body(result);
+        } catch (CommentDeletedException e) {
+            LinkedHashMap<String, Object> result = new LinkedHashMap<>();
+            result.put("error", "해당 댓글이 삭제되었습니다.");
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(result);
+        }
     }
 }

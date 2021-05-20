@@ -2,8 +2,11 @@ package com.icloud.my_portfolio.service;
 
 import com.icloud.my_portfolio.domain.Comment;
 import com.icloud.my_portfolio.domain.CommentLike;
+import com.icloud.my_portfolio.domain.CommentStatus;
+import com.icloud.my_portfolio.exception.CommentDeletedException;
 import com.icloud.my_portfolio.repository.CommentLikeCustomRepository;
 import com.icloud.my_portfolio.repository.CommentLikeRepository;
+import com.icloud.my_portfolio.repository.CommentRepositoryWithJpql;
 import com.icloud.my_portfolio.repository.UserCustomRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -20,23 +23,12 @@ public class CommentLikeService {
     private final CommentLikeRepository commentLikeRepository;
     private final UserCustomRepository userCustomRepository;
 
-
     public LinkedHashMap<String, Object> commentLikeEvent(Long commentId, String username) {
         Long userId = userCustomRepository.findIdByUsername(username);
 
-//        List<CommentLike> findCommentLike = commentLikeCustomRepository.findInactive(commentId, userId);
-//        if (!findCommentLike.isEmpty()) {
-//            CommentLike commentLike = findCommentLike.get(0);
-//            commentLike.active();
-//        } else {
-//            Comment comment = new Comment(commentId);
-//            CommentLike commentLike = new CommentLike(comment, userId, username);
-//            commentLike.active();
-//            commentLikeRepository.save(commentLike);
-//            commentLikeCustomRepository.updateCount(commentId);
-//        }
-
-
+        if (!isValidComment(commentId)) {
+            throw new CommentDeletedException();
+        }
         CommentLike findCommentLike = commentLikeCustomRepository.findCommentLike(commentId, userId);
         try {
             switch (findCommentLike.getStatus()) {
@@ -64,11 +56,7 @@ public class CommentLikeService {
         return result;
     }
 
-    public void inactiveLike(Long commentId, String username) {
-        Long userId = userCustomRepository.findIdByUsername(username);
-        CommentLike findCommentLike = commentLikeCustomRepository.findActiveCommentLike(commentId, userId);
-
-        /* Dirty Checking */
-        findCommentLike.inactive();
+    private boolean isValidComment(Long commentId) {
+        return commentLikeCustomRepository.getCommentStatusById(commentId) == CommentStatus.Y;
     }
 }

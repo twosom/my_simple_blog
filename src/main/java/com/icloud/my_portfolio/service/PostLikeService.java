@@ -2,6 +2,8 @@ package com.icloud.my_portfolio.service;
 
 import com.icloud.my_portfolio.domain.Post;
 import com.icloud.my_portfolio.domain.PostLike;
+import com.icloud.my_portfolio.domain.PostStatus;
+import com.icloud.my_portfolio.exception.PostDeletedException;
 import com.icloud.my_portfolio.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -15,12 +17,18 @@ import java.util.LinkedHashMap;
 public class PostLikeService {
 
     private final PostLikeRepository postLikeRepository;
+    private final PostCustomRepository postCustomRepository;
     private final UserCustomRepository userCustomRepository;
     private final PostLikeCustomRepository postLikeCustomRepository;
 
     public LinkedHashMap<String, Object> postLikeEvent(Long postId, String username) {
 
         Long userId = userCustomRepository.findIdByUsername(username);
+
+        if (!isValidPost(postId)) {
+            throw new PostDeletedException();
+        }
+
         PostLike findPostLike = postLikeCustomRepository.findLike(postId, userId);
         try {
             switch (findPostLike.getStatus()) {
@@ -47,6 +55,10 @@ public class PostLikeService {
         result.put("count", postLikeCustomRepository.getCount(postId));
 
         return result;
+    }
+
+    private boolean isValidPost(Long postId) {
+        return postCustomRepository.getStatusById(postId) == PostStatus.Y;
     }
 
     public void inactiveLike(Long postId, String username) {
