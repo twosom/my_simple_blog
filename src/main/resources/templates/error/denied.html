@@ -1,0 +1,29 @@
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorator="layouts/main">
+<head>
+    <meta charset="UTF-8"/>
+    <title th:text="${#authentication.authorities} + ' 권한은 접근 불가능합니다.'"></title>
+    <style type="text/css">
+        .wrapper {
+            width: 100%;
+            text-align: center;
+        }
+
+        .big {
+            font-size: 100%
+        }
+    </style>
+    <div th:replace="fragments/header.html :: fragment-header('Error TxT')"></div>
+</head>
+<body>
+<div th:replace="fragments/nav.html :: fragment-nav('권한 에러')"></div>
+
+<div class="wrapper">
+    <div class="big">
+        <h1>Access Denied</h1>
+        <p>권한이 부족합니다.</p>
+        <br/>
+    </div>
+</div>
+</body>
+</html>

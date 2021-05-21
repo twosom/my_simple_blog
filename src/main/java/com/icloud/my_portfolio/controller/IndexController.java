@@ -1,8 +1,8 @@
 package com.icloud.my_portfolio.controller;
 
 
-import com.icloud.my_portfolio.controller.dto.PostListDto;
-import com.icloud.my_portfolio.service.post.PostQueryService;
+import com.icloud.my_portfolio.post.dto.PostListDto;
+import com.icloud.my_portfolio.post.service.PostQueryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -31,5 +31,8 @@ public class IndexController {
         return "about";
     }
 
-
+    @GetMapping("/denied")
+    public String accessDenied() {
+        return "error/denied";
+    }
 }

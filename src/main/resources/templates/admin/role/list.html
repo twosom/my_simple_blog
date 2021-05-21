@@ -1,0 +1,35 @@
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorator="layouts/main">
+<head>
+    <div th:replace="fragments/header.html :: fragment-header('권한 설정')"></div>
+</head>
+<body>
+
+<!-- Navigation -->
+<div th:replace="fragments/nav.html :: fragment-nav('권한 설정')"></div>
+
+<div class="container">
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>권한 등급</th>
+            <th>권한 이름</th>
+            <th>권한 설명</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="role : ${roleList}">
+            <th scope="row" th:text="${role.roleGrade}"></th>
+            <td><a th:text="${role.roleName}" th:href="@{/admin/roles/{id} (id=${role.id})}"></a></td>
+            <td th:text="${role.roleDesc}"></td>
+            <th><a class="btn btn-danger" role="button" th:href="@{/admin/roles/delete/{id} (id=${role.id})}">삭제</a></th>
+        </tr>
+        </tbody>
+    </table>
+    <a class="btn btn-primary" role="button" th:href="@{/admin/roles/register}">권한 추가</a>
+
+</div>
+<div th:replace="fragments/footer_without_pager.html :: fragment-footer-without-pager"></div>
+
+</body>
+</html>

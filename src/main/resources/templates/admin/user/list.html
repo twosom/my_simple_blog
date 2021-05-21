@@ -1,0 +1,36 @@
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorator="layouts/main">
+<head>
+    <div th:replace="fragments/header.html :: fragment-header('계정 설정')"></div>
+</head>
+<body>
+
+<!-- Navigation -->
+<div th:replace="fragments/nav.html :: fragment-nav('계정 설정')"></div>
+
+<div class="container">
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>이름</th>
+            <th>이메일</th>
+            <th>권한</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="account : ${accountList}">
+            <th scope="row" th:text="${account.username}"></th>
+            <td><a th:text="${account.email}" th:href="@{/admin/accounts/{id} (id=${account.id})}"></a></td>
+            <td style="text-align: left;">
+							<span th:each="role,iter : ${account.roleList}">
+								<h6 th:text="${role.roleName}"></h6>
+							</span>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+<div th:replace="fragments/footer_without_pager.html :: fragment-footer-without-pager"></div>
+
+</body>
+</html>

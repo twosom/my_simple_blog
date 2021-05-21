@@ -1,10 +1,9 @@
 package com.icloud.my_portfolio.controller;
 
-import com.icloud.my_portfolio.controller.dto.PostListDto;
-import com.icloud.my_portfolio.domain.CommentStatus;
-import com.icloud.my_portfolio.domain.Post;
-import com.icloud.my_portfolio.domain.PostStatus;
-import com.icloud.my_portfolio.repository.postquery.PostQueryRepository;
+import com.icloud.my_portfolio.like.comment.CommentStatus;
+import com.icloud.my_portfolio.post.Post;
+import com.icloud.my_portfolio.post.PostStatus;
+import com.icloud.my_portfolio.post.repository.PostQueryRepository;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
@@ -56,11 +55,11 @@ public class APIController {
 
             this.content = post.getContent();
             this.postStatus = post.getStatus();
-            this.username = post.getUser().getUsername();
+            this.username = post.getAccount().getUsername();
 
             if (post.getComments() != null) {
                 this.comments = post.getComments()
-                        .stream().map(comment -> new CommentQueryDto(comment.getId(), comment.getContent(), comment.getUser().getUsername(), comment.getStatus()))
+                        .stream().map(comment -> new CommentQueryDto(comment.getId(), comment.getContent(), comment.getAccount().getUsername(), comment.getStatus()))
                         .collect(Collectors.toList());
             }
         }
