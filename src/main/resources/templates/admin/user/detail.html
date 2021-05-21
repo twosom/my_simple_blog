@@ -11,6 +11,8 @@
           th:action="@{/admin/accounts}"
           th:object="${account}" method="post" th:id="account">
 
+
+        <input th:type="hidden" name="id" th:value="*{id}"/>
         <div class="form-group">
             <label for="username" class="col-sm-2 control-label">아이디</label>
             <div class="col-sm-10">

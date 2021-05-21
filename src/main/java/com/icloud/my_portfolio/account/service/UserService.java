@@ -82,6 +82,7 @@ public class UserService {
     }
 
     public void modifyAccount(AccountDto accountDto) {
+        accountDto.setPassword(passwordEncoder.encode(accountDto.getPassword()));
         Account account = mapper.map(accountDto, Account.class);
 
         if (accountDto.getRoleList() != null) {
@@ -90,6 +91,7 @@ public class UserService {
                     .collect(Collectors.toList());
             account.setRoleList(roleList);
         }
+        account.setEnabled(true);
 
         userRepository.save(account);
     }
