@@ -26,6 +26,18 @@
                         <a class="nav-link" th:href="@{/about}">About</a>
                     </li>
 
+                    <li class="nav-item" sec:authorize="hasAnyRole('ROLE_ADMIN')">
+                        <a class="nav-link" th:href="@{/admin/roles}">권한 설정</a>
+                    </li>
+
+                    <li class="nav-item" sec:authorize="hasAnyRole('ROLE_ADMIN')">
+                        <a class="nav-link" th:href="@{/admin/resources}">자원 설정</a>
+                    </li>
+
+                    <li class="nav-item" sec:authorize="hasAnyRole('ROLE_ADMIN')">
+                        <a class="nav-link" th:href="@{/admin/accounts}">계정 설정</a>
+                    </li>
+
                 </ul>
             </div>
             <div class="d-grid gap-3 d-md-flex justify-content-md-end" sec:authorize="!isAuthenticated()">
@@ -35,8 +47,8 @@
 
             <form class="form-inline my-2 my-1g-0" sec:authorize="isAuthenticated()" th:action="@{/logout}"
                   method="post">
-                <span class="text-white" sec:authentication="name">사용자</span>
-                <span class="text-white mx-2" sec:authentication="principal.authorities">권한</span>
+                <span class="text-white" th:text="${#authentication.name}">사용자</span>
+                <span class="text-white mx-2" th:text="${#authentication.getAuthorities()}">권한</span>
                 <button class="btn btn-outline-danger" type="submit">Logout</button>
             </form>
         </div>
@@ -59,7 +71,6 @@
                                 th:utext=" 'Good Evening' + '<br/>' + ${#authentication.name} + '님 오늘하루도 고생하셨습니다.'  "></h3>
                             <h3 th:if="${#strings.equals(message, 'Home') && (#temporals.hour(#temporals.createNow()) ge 21 || #temporals.hour(#temporals.createNow()) lt 6) }"
                                 th:utext=" 'Good Night' + '<br/>' + ${#authentication.name} + '님 안녕히 주무세요.'  "></h3>
-<!--                            <h3 th:if="${#strings.equals(message, 'Home')}" th:text="${#authentication.name} + '님 오늘도 좋은하루 되세요.'"></h3>-->
                         </div>
                         <span class="subheading">for Somang's Portfolio</span>
                     </div>

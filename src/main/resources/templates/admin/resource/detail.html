@@ -1,0 +1,82 @@
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorator="layouts/main">
+<head>
+    <div th:replace="fragments/header.html :: fragment-header('리소스 설정')"></div>
+</head>
+<body>
+<div th:replace="fragments/nav.html :: fragment-nav('리소스 설정')"></div>
+
+<div class="container">
+    <form class="form-horizontal well bs-component col-lg-10 col-lg-offset-1"
+          th:action="@{/admin/resources/register}"
+          th:object="${resources}" method="post" th:id="resources">
+        <div class="tbl_wrp">
+            <input th:type="hidden" name="id" th:value="*{id}"/>
+            <div class="form-group">
+                <label for="resourceName" class="col-sm-2 control-label">리소스명</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control input-large" name="resourceName" id="resourceName"
+                           placeholder="roleName" th:value="*{resourceName}">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="resourceType" class="col-sm-2 control-label">리소스 타입</label>
+                <div class="col-sm-10">
+                    <select class="custom-select" name="resourceType" id="resourceType">
+                        <option th:each="resourceType: ${T(com.icloud.my_portfolio.resources.ResourceType).values()}"
+                                th:value="${resourceType.name()}"
+                                th:text="${resourceType.name()}"
+                                th:selected="${resources.resourceType != null && resourceType.name().equals(resources.resourceType.name())} ? 'true' : 'false'"></option>
+                    </select>
+                </div>
+            </div>
+
+
+            <div class="form-group">
+                <label for="httpMethod" class="col-sm-2 control-label">HTTP METHOD</label>
+                <div class="col-sm-10">
+                    <select class="custom-select" name="httpMethod" id="httpMethod">
+                        <option th:each="httpMethod: ${T(org.springframework.http.HttpMethod).values()}"
+                                th:value="${httpMethod.name()}"
+                                th:text="${httpMethod.name()}"
+                                th:selected="${resources.httpMethod != null && httpMethod.name().equals(resources.httpMethod.name())} ? 'true' : 'false'"></option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="orderNum" class="col-sm-2 control-label">순서</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control input-large" name="orderNum" id="orderNum" placeholder="순서"
+                           th:value="*{orderNum}">
+                </div>
+            </div>
+
+
+            <div class="form-group">
+                <label for="roleList" class="col-sm-2 control-label">권한</label>
+                <div class="col-sm-10">
+                    <select class="custom-select" name="roleList" id="roleList">
+                        <option th:each="role: ${roleList}"
+                                th:value="${role.roleName}"
+                                th:text="${role.roleName}"
+                                th:selected="${resources.roleList.contains(role.roleName)} ? 'true' : 'false'"></option>
+                    </select>
+                </div>
+            </div>
+
+
+            <div class="form-group">
+                <div class="fol-lg-10 col-lg-offset-2">
+                    <a th:if="${resources.id != null}" type="button" role="button" class="btn btn-danger"
+                       th:href="@{/admin/resources/delete/{id} (id=${resources.id})}">Delete</a>
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+</body>
+<div th:replace="fragments/footer_without_pager :: fragment-footer-without-pager"></div>
+</html>
