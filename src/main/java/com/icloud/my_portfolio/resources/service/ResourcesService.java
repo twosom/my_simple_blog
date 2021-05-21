@@ -65,4 +65,20 @@ public class ResourcesService {
 
         return result;
     }
+
+    public ResourcesDto getResources(Long id) {
+        Resources resources = resourcesRepository.findById(id)
+                .orElse(new Resources());
+
+        ResourcesDto resourcesDto = mapper.map(resources, ResourcesDto.class);
+
+        if (resources.getRoleList() != null) {
+            List<String> roleList = resources.getRoleList()
+                    .stream().map(Role::getRoleName)
+                    .collect(Collectors.toList());
+            resourcesDto.setRoleList(roleList);
+        }
+
+        return resourcesDto;
+    }
 }

@@ -46,6 +46,15 @@ public class ResourcesController {
         return "redirect:/admin/resources";
     }
 
+    @GetMapping("/admin/resources/{id}")
+    public String resourcesDetail(@PathVariable("id") Long id, Model model) {
+        ResourcesDto resourcesDto = resourcesService.getResources(id);
+        model.addAttribute("resources", resourcesDto);
+        model.addAttribute("roleList", roleService.getRoles());
+
+        return "admin/resource/detail";
+    }
+
     @GetMapping("/admin/resources/delete/{id}")
     public String removeResources(@PathVariable("id") Long id) {
         resourcesService.removeResources(id);
