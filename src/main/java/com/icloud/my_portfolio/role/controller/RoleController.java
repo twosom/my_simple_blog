@@ -4,11 +4,14 @@ import com.icloud.my_portfolio.role.Role;
 import com.icloud.my_portfolio.role.dto.RoleDto;
 import com.icloud.my_portfolio.role.service.RoleService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.List;
 
@@ -56,5 +59,12 @@ public class RoleController {
         return "redirect:/admin/roles";
     }
 
-
+    @PostMapping("/admin/roles/check")
+    @ResponseBody
+    public ResponseEntity<String> checkRoleHierarchy() {
+        String roleHierarchy = roleService.getRoleHierarchy();
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(roleHierarchy);
+    }
 }

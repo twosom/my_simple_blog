@@ -42,7 +42,7 @@
 
             <div class="form-group">
                 <div class="fol-lg-10 col-lg-offset-2">
-                    <a type="button" role="button" class="btn btn-danger"
+                    <a th:if="${role.id != null}" type="button" role="button" class="btn btn-danger"
                        th:href="@{/admin/roles/delete/{id} (id=${role.id})}">Delete</a>
                     <button type="submit" class="btn btn-primary">Submit</button>
                 </div>

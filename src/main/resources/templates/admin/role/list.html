@@ -22,14 +22,33 @@
             <th scope="row" th:text="${role.roleGrade}"></th>
             <td><a th:text="${role.roleName}" th:href="@{/admin/roles/{id} (id=${role.id})}"></a></td>
             <td th:text="${role.roleDesc}"></td>
-            <th><a class="btn btn-danger" role="button" th:href="@{/admin/roles/delete/{id} (id=${role.id})}">삭제</a></th>
+            <th><a class="btn btn-danger" role="button" th:href="@{/admin/roles/delete/{id} (id=${role.id})}">삭제</a>
+            </th>
         </tr>
         </tbody>
     </table>
     <a class="btn btn-primary" role="button" th:href="@{/admin/roles/register}">권한 추가</a>
+    <a class="btn btn-outline-info" role="button" onclick="checkRoleHierarchy()">현재 권한계층 확인</a>
 
 </div>
 <div th:replace="fragments/footer_without_pager.html :: fragment-footer-without-pager"></div>
 
 </body>
+<script>
+    async function checkRoleHierarchy() {
+
+        await fetch('/admin/roles/check', {method: 'POST'})
+            .then(response => {
+                if (response.status === 200) {
+                    return response.text();
+                } else {
+                    throw new Error('오류가 발생하였습니다.');
+                }
+            }).then(result => {
+                alert(result);
+            }).catch(error => {
+                alert(error.message);
+            })
+    }
+</script>
 </html>
