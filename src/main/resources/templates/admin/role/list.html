@@ -37,7 +37,10 @@
 <script>
     async function checkRoleHierarchy() {
 
-        await fetch('/admin/roles/check', {method: 'POST'})
+        const csrfHeader = document.querySelector('#_csrf_header').content;
+        const csrf = document.querySelector('#_csrf').content;
+
+        await fetch('/admin/roles/check', {method: 'POST', headers: {[csrfHeader]: csrf}})
             .then(response => {
                 if (response.status === 200) {
                     return response.text();
