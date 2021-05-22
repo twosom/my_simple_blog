@@ -7,48 +7,116 @@
 <div th:replace="fragments/nav.html :: fragment-nav(Register)"></div>
 <!-- Bootstrap CSS -->
 
-<form class="form-signin" th:action="@{/account/register}" th:object="${accountDto}" method="post">
+<div class="form-signin" th:action="@{/account/register}" method="post">
     <!--for login-->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet"
           integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
     <link href="css/signin.css" th:href="@{/css/signin.css}" rel="stylesheet">
 
 
-    <a th:href="@{/}"><img class="mb-4" th:src="@{/img/user-register.png}" src="https://getbootstrap.com/docs/5.0/assets/brand/bootstrap-logo.svg" alt=""
+    <a th:href="@{/}"><img class="mb-4" th:src="@{/img/user-register.png}"
+                           src="https://getbootstrap.com/docs/5.0/assets/brand/bootstrap-logo.svg" alt=""
                            width="72" height="auto"></a>
     <h1 class="h3 mb-3 fw-normal">회원가입</h1>
 
     <label for="email" class="visually-hidden">Email</label>
-    <input type="email" id="email" name="email" th:field="*{email}" class="form-control" placeholder="이메일" required
+    <input type="email" id="email" name="email" class="form-control" placeholder="이메일" required
            autofocus>
+    <div id="emailErrorField"></div>
     <!--이메일 중복 예외처리를 위한 thymeleaf문-->
     <div th:if="${emailErrorMsg}" class="alert alert-danger" role="alert" th:text="${emailErrorMsg}">
     </div>
 
     <label for="username" class="visually-hidden">Username</label>
-    <input type="text" id="username" name="username" th:field="*{username}" class="form-control" placeholder="이름">
+    <input type="text" id="username" name="username" class="form-control" placeholder="이름">
+    <div id="usernameErrorField"></div>
     <!--사용자 이름 중복 예외처리를 위한 thymeleaf문 -->
     <div th:if="${usernameErrorMsg}" class="alert alert-danger" role="alert" th:text="${usernameErrorMsg}">
     </div>
 
-    <label for="inputPassword" class="visually-hidden">Password</label>
-    <input type="password" id="inputPassword" name="password" th:field="*{password}" class="form-control"
+    <label for="password" class="visually-hidden">Password</label>
+    <input type="password" id="password" name="password" class="form-control"
            placeholder="비밀번호" required>
+    <div id="passwordErrorField"></div>
+    <button class="w-100 btn btn-lg btn-primary" type="button" onclick="registerAccount.register()">회원가입</button>
 
-    <div th:if="${param.error}" class="alert alert-danger" role="alert">
-        아이디 또는 비밀번호를 확인해주세요.
-    </div>
-    <div th:if="${param.logout}" class="alert alert-primary" role="alert">
-        안전하게 로그아웃 되었습니다.
-    </div>
-    <!--        <div class="checkbox mb-3">-->
-    <!--            <label>-->
-    <!--                <input type="checkbox" value="remember-me"> Remember me-->
-    <!--            </label>-->
-    <!--        </div>-->
-    <button class="w-100 btn btn-lg btn-primary" type="submit">회원가입</button>
-
-</form>
+</div>
 <div th:replace="fragments/footer_without_pager.html :: fragment-footer-without-pager"></div>
 </body>
+<script>
+    const registerAccount = {
+
+        async register() {
+            const emailElement = document.querySelector('#email');
+            const usernameElement = document.querySelector('#username');
+            const passwordElement = document.querySelector('#password');
+
+            const csrfHeader = document.querySelector('#_csrf_header').content;
+            const csrf = document.querySelector('#_csrf').content;
+
+            if (this.validateValues(emailElement, usernameElement, passwordElement)) {
+                const data = {
+                    email: emailElement.value,
+                    username: usernameElement.value,
+                    password: passwordElement.value
+                };
+
+                await fetch('/account/register', {
+                    method: 'POST',
+                    body: JSON.stringify(data),
+                    headers: {
+                        'Content-Type': 'application/json',
+                        [csrfHeader]: csrf
+                    }
+                }).then(response => {
+                    return response.json();
+                }).then(result => {
+                    debugger;
+                    switch (result.registerStatus) {
+                        case 'OK':
+                            alert(result.message);
+                            window.location = '/';
+                        case 'Failed':
+                            switch (result.field) {
+                                case 'email':
+                                    const emailErrorField = document.querySelector('#emailErrorField');
+                                    emailErrorField.setAttribute('class', 'alert alert-danger');
+                                    emailErrorField.setAttribute('role', 'alert');
+                                    emailErrorField.innerText = result.message;
+                                    break;
+                                case 'username':
+                                    const usernameErrorField = document.querySelector('#usernameErrorField');
+                                    usernameErrorField.setAttribute('class', 'alert alert-danger');
+                                    usernameErrorField.setAttribute('role', 'alert');
+                                    usernameErrorField.innerText = result.message;
+                                    break;
+                            }
+                    }
+                })
+            }
+
+
+        },
+        validateValues(...elements) {
+            let validateCount = 0
+            elements.forEach((element, index, array) => {
+                const errorField = document.querySelector(`#${element.getAttribute('id')}ErrorField`);
+                if (element.value === null || element.value.trim() === '') {
+                    errorField.setAttribute('class', 'alert alert-danger');
+                    errorField.setAttribute('role', 'alert');
+                    errorField.innerText = `${element.getAttribute('id')} 는 필수입니다.`;
+                } else {
+                    errorField.removeAttribute('class');
+                    errorField.removeAttribute('role');
+                    errorField.innerText = '';
+                    validateCount += 1;
+                }
+            });
+
+            return validateCount === elements.length;
+        }
+    }
+
+
+</script>
 </html>
