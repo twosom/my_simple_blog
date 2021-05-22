@@ -92,7 +92,7 @@
 
                 <!-- 로그인 한 경우 -->
                 <div sec:authorize="isAuthenticated()">
-                    <span th:onclick="|postLikeEvent('${postViewDto.id}')|">
+                    <span th:onclick="|eventList.postLikeEvent('${postViewDto.id}')|">
                         <i id="postLikeCount"
                            th:class="${postViewDto.likeUsers.contains(#authentication.name)} ? 'bi bi-heart-fill' : 'bi bi-heart'"><strong
                                 th:text="${postViewDto.likeUsers.size()}"></strong></i>
@@ -122,7 +122,7 @@
                 <ul class="pager" style="text-align:right;">
                     <li class="next">
                         <!--                        <button type="submit" class="btn btn-primary">Submit</button>-->
-                        <button sec:authorize="isAuthenticated()" type="button" onclick="sendPostComment()"
+                        <button sec:authorize="isAuthenticated()" type="button" onclick="eventList.sendPostComment()"
                                 class="btn btn-primary">Submit
                         </button>
                     </li>
@@ -144,7 +144,7 @@
                         </div>
                         <!-- 로그인 한 경우 -->
                         <div sec:authorize="isAuthenticated()">
-                                <span th:onclick="|commentLikeEvent('${comment.id}')|">
+                                <span th:onclick="|eventList.commentLikeEvent('${comment.id}')|">
                                     <i th:id="${'commentLikeCount' + comment.id}"
                                        th:class="${comment.likeUsers.contains(#authentication.name) ? 'bi bi-heart-fill' : 'bi bi-heart' }">
                                         <strong th:text="${comment.likeUsers.size()}"></strong>
@@ -179,103 +179,128 @@
 <!-- Footer -->
 <div th:replace="fragments/footer_without_pager.html :: fragment-footer-without-pager"></div>
 <script>
-    async function postLikeEvent(postId) {
-        await fetch('/postlike/' + postId, {method: 'POST'})
-            .then((response) => {
-                if (response.status === 200) {
-                    return response.json();
-                }
-                throw new Error('해당 게시글은 이미 삭제되었습니다.');
-            })
-            .then((result) => {
-                const postLikeCountElement = document.querySelector('#postLikeCount');
-                switch (result.status) {
-                    case 'N':
-                        postLikeCountElement.setAttribute('class', 'bi bi-heart');
-                        break;
-                    case 'Y':
-                        postLikeCountElement.setAttribute('class', 'bi bi-heart-fill');
-                        break;
-                }
 
-                postLikeCountElement.innerText = result.count;
-            })
-            .catch(error => {
-                alert(error.message);
-                window.location = '/';
-            })
-
-    }
-
-    async function commentLikeEvent(commentId) {
-        await fetch('/commentlike/' + commentId, {method: 'POST'})
-            .then((response) => {
-                if (response.status === 200) {
-                    return response.json();
-                }
-                throw new Error('해당 댓글이 이미 삭제되었습니다.');
-            })
-            .then((result) => {
-                const commentLikeCountElement = document.querySelector('#commentLikeCount' + commentId);
-                switch (result.status) {
-                    case 'N':
-                        commentLikeCountElement.setAttribute('class', 'bi bi-heart');
-                        break;
-                    case 'Y':
-                        commentLikeCountElement.setAttribute('class', 'bi bi-heart-fill');
-                        break;
-                }
-
-                commentLikeCountElement.innerText = result.count;
-            })
-            .catch(error => {
-                alert(error.message);
-                window.location = '/posts/' + document.querySelector('#postId').value;
-            })
-
-    }
-
-    async function sendPostComment() {
-        let textField = document.querySelector('#content');
-        const content = textField.value;
-        if (content.trim().length === 0 || content.trim() === '') {
-            alert('내용을 입력해주세요.');
-
-            return;
-        }
-
-        const username = document.querySelector('#username').value;
-
-        const postId = document.querySelector('#postId').value;
-
-        const data = {
-            content: content,
-            postId: postId,
-            username: username,
-        }
-
-        await fetch('/comments', {
+    const eventList = {
+        option: {
             method: 'POST',
-            headers: {
+            headers: {}
+        },
+        alreadySetup: false,
+        initHeaders() {
+            const csrfHeader = document.querySelector('#_csrf_header').content;
+            const csrf = document.querySelector('#_csrf').content;
+            this.option.headers = {
+                [csrfHeader]: csrf,
                 'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(data)
-        }).then(response => {
-            if (response.status === 201) {
-                return response.text();
-            } else {
-                throw new Error();
             }
-        }).then(result => {
-            console.log(result);
-            alert('댓글 작성이 완료되었습니다');
-            window.location = '/posts/' + postId;
-        }).catch(reason => {
-            alert(reason);
-        });
+            this.alreadySetup = true;
+        },
 
+        async postLikeEvent(postId) {
+            if (!this.alreadySetup) {
+                this.initHeaders();
+            }
 
-    }
+            await fetch('/postlike/' + postId, this.option)
+                .then((response) => {
+                    if (response.status === 200) {
+                        return response.json();
+                    }
+                    throw new Error('해당 게시글은 이미 삭제되었습니다.');
+                })
+                .then((result) => {
+                    const postLikeCountElement = document.querySelector('#postLikeCount');
+                    switch (result.status) {
+                        case 'N':
+                            postLikeCountElement.setAttribute('class', 'bi bi-heart');
+                            break;
+                        case 'Y':
+                            postLikeCountElement.setAttribute('class', 'bi bi-heart-fill');
+                            break;
+                    }
+
+                    postLikeCountElement.innerText = result.count;
+                })
+                .catch(error => {
+                    alert(error.message);
+                    window.location = '/';
+                });
+        },
+
+        async commentLikeEvent(commentId) {
+            if (!this.alreadySetup) {
+                this.initHeaders();
+            }
+
+            await fetch('/commentlike/' + commentId, this.option)
+                .then((response) => {
+                    if (response.status === 200) {
+                        return response.json();
+                    }
+                    throw new Error('해당 댓글이 이미 삭제되었습니다.');
+                })
+                .then((result) => {
+                    const commentLikeCountElement = document.querySelector('#commentLikeCount' + commentId);
+                    switch (result.status) {
+                        case 'N':
+                            commentLikeCountElement.setAttribute('class', 'bi bi-heart');
+                            break;
+                        case 'Y':
+                            commentLikeCountElement.setAttribute('class', 'bi bi-heart-fill');
+                            break;
+                    }
+
+                    commentLikeCountElement.innerText = result.count;
+                })
+                .catch(error => {
+                    alert(error.message);
+                    window.location = '/posts/' + document.querySelector('#postId').value;
+                });
+        },
+
+        async sendPostComment() {
+
+            if (!this.alreadySetup) {
+                this.initHeaders();
+            }
+
+            let textField = document.querySelector('#content');
+            const content = textField.value;
+            if (content.trim().length === 0 || content.trim() === '') {
+                alert('내용을 입력해주세요.');
+                return;
+            }
+
+            const username = document.querySelector('#username').value;
+
+            const postId = document.querySelector('#postId').value;
+
+            const data = {
+                content: content,
+                postId: postId,
+                username: username,
+            }
+
+            const myOption = Object.assign({}, this.option, {body: JSON.stringify(data)});
+
+            await fetch('/comments', myOption)
+                .then(response => {
+                    if (response.status === 201) {
+                        return response.text();
+                    } else {
+                        throw new Error();
+                    }
+                }).then(result => {
+                    console.log(result);
+                    alert('댓글 작성이 완료되었습니다');
+                    window.location = '/posts/' + postId;
+                }).catch(reason => {
+                    alert(reason);
+                });
+
+        }
+
+    };
 </script>
 
 
